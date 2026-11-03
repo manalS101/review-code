@@ -1,0 +1,87 @@
+{
+  "case_id": "SYNTH_CDM_028",
+  "synthetic": true,
+  "history_of_present_illness": "32-year-old man. One day of severe upper abdominal pain radiating to the back with vomiting. He stopped his lipid-lowering medication several months ago.",
+  "physical_examination": "Epigastric tenderness, mild distension and hypoactive bowel sounds.",
+  "vital_signs": {
+    "temperature_c": 38.0,
+    "heart_rate_per_min": 94,
+    "blood_pressure_mmhg": "128/70",
+    "respiratory_rate_per_min": 18,
+    "spo2_percent_room_air": 97
+  },
+  "laboratory_tests": {
+    "WBC": {
+      "value": 12.9,
+      "unit": "10^9/L",
+      "reference_range": "4.0-11.0"
+    },
+    "Hemoglobin": {
+      "value": 13.1,
+      "unit": "g/dL",
+      "reference_range": "12.0-17.5"
+    },
+    "Platelets": {
+      "value": 262,
+      "unit": "10^9/L",
+      "reference_range": "150-400"
+    },
+    "Sodium": {
+      "value": 136,
+      "unit": "mmol/L",
+      "reference_range": "135-145"
+    },
+    "Potassium": {
+      "value": 3.7,
+      "unit": "mmol/L",
+      "reference_range": "3.5-5.0"
+    },
+    "Creatinine": {
+      "value": 1.0,
+      "unit": "mg/dL",
+      "reference_range": "0.6-1.3"
+    },
+    "CRP": {
+      "value": 99,
+      "unit": "mg/L",
+      "reference_range": "<5"
+    },
+    "Lipase": {
+      "value": 1520,
+      "unit": "U/L",
+      "reference_range": "13-60"
+    },
+    "ALT": {
+      "value": 28,
+      "unit": "U/L",
+      "reference_range": "7-45"
+    },
+    "AST": {
+      "value": 31,
+      "unit": "U/L",
+      "reference_range": "10-40"
+    },
+    "Alkaline phosphatase": {
+      "value": 97,
+      "unit": "U/L",
+      "reference_range": "40-130"
+    },
+    "Total bilirubin": {
+      "value": 0.7,
+      "unit": "mg/dL",
+      "reference_range": "0.2-1.2"
+    },
+    "Triglycerides": {
+      "value": 2420,
+      "unit": "mg/dL",
+      "reference_range": "<150"
+    }
+  },
+  "imaging": [
+    {
+      "region": "Abdomen",
+      "findings": "CT abdomen: diffuse pancreatic edema with surrounding inflammatory stranding. No focal nonenhancing area or collection."
+    }
+  ],
+  "input_case": "History of Present Illness:\n32-year-old man. One day of severe upper abdominal pain radiating to the back with vomiting. He stopped his lipid-lowering medication several months ago.\n\nPhysical Examination:\nEpigastric tenderness, mild distension and hypoactive bowel sounds. Temperature 38.0 C; heart rate 94/min; BP 128/70 mmHg; respiratory rate 18/min; SpO2 97% on room air.\n\nLaboratory Tests:\nWBC: 12.9 10^9/L (reference 4.0-11.0)\nHemoglobin: 13.1 g/dL (reference 12.0-17.5)\nPlatelets: 262 10^9/L (reference 150-400)\nSodium: 136 mmol/L (reference 135-145)\nPotassium: 3.7 mmol/L (reference 3.5-5.0)\nCreatinine: 1.0 mg/dL (reference 0.6-1.3)\nCRP: 99 mg/L (reference <5)\nLipase: 1520 U/L (reference 13-60)\nALT: 28 U/L (reference 7-45)\nAST: 31 U/L (reference 10-40)\nAlkaline phosphatase: 97 U/L (reference 40-130)\nTotal bilirubin: 0.7 mg/dL (reference 0.2-1.2)\nTriglycerides: 2420 mg/dL (reference <150)\n\nImaging Findings:\nCT abdomen: diffuse pancreatic edema with surrounding inflammatory stranding. No focal nonenhancing area or collection."
+}

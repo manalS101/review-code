@@ -1,0 +1,82 @@
+{
+  "case_id": "SYNTH_CDM_041",
+  "synthetic": true,
+  "history_of_present_illness": "25-year-old man. Twenty hours of pain migrating from the central abdomen to the right lower quadrant, with nausea. He has not measured a fever.",
+  "physical_examination": "Right lower-quadrant tenderness with localized rebound.",
+  "vital_signs": {
+    "temperature_c": 37.1,
+    "heart_rate_per_min": 88,
+    "blood_pressure_mmhg": "128/74",
+    "respiratory_rate_per_min": 20,
+    "spo2_percent_room_air": 97
+  },
+  "laboratory_tests": {
+    "WBC": {
+      "value": 9.4,
+      "unit": "10^9/L",
+      "reference_range": "4.0-11.0"
+    },
+    "Hemoglobin": {
+      "value": 13.5,
+      "unit": "g/dL",
+      "reference_range": "12.0-17.5"
+    },
+    "Platelets": {
+      "value": 290,
+      "unit": "10^9/L",
+      "reference_range": "150-400"
+    },
+    "Sodium": {
+      "value": 137,
+      "unit": "mmol/L",
+      "reference_range": "135-145"
+    },
+    "Potassium": {
+      "value": 3.9,
+      "unit": "mmol/L",
+      "reference_range": "3.5-5.0"
+    },
+    "Creatinine": {
+      "value": 1.0,
+      "unit": "mg/dL",
+      "reference_range": "0.6-1.3"
+    },
+    "CRP": {
+      "value": 135,
+      "unit": "mg/L",
+      "reference_range": "<5"
+    },
+    "Lipase": {
+      "value": 42,
+      "unit": "U/L",
+      "reference_range": "13-60"
+    },
+    "ALT": {
+      "value": 32,
+      "unit": "U/L",
+      "reference_range": "7-45"
+    },
+    "AST": {
+      "value": 27,
+      "unit": "U/L",
+      "reference_range": "10-40"
+    },
+    "Alkaline phosphatase": {
+      "value": 105,
+      "unit": "U/L",
+      "reference_range": "40-130"
+    },
+    "Total bilirubin": {
+      "value": 0.7,
+      "unit": "mg/dL",
+      "reference_range": "0.2-1.2"
+    }
+  },
+  "imaging": [
+    {
+      "region": "Abdomen/Pelvis",
+      "findings": "CT abdomen/pelvis: 9 mm fluid-filled appendix with adjacent fat stranding and trace localized fluid. No collection."
+    }
+  ],
+  "input_case": "History of Present Illness:\n25-year-old man. Twenty hours of pain migrating from the central abdomen to the right lower quadrant, with nausea. He has not measured a fever.\n\nPhysical Examination:\nRight lower-quadrant tenderness with localized rebound. Temperature 37.1 C; heart rate 88/min; BP 128/74 mmHg; respiratory rate 20/min; SpO2 97% on room air.\n\nLaboratory Tests:\nWBC: 9.4 10^9/L (reference 4.0-11.0)\nHemoglobin: 13.5 g/dL (reference 12.0-17.5)\nPlatelets: 290 10^9/L (reference 150-400)\nSodium: 137 mmol/L (reference 135-145)\nPotassium: 3.9 mmol/L (reference 3.5-5.0)\nCreatinine: 1.0 mg/dL (reference 0.6-1.3)\nCRP: 135 mg/L (reference <5)\nLipase: 42 U/L (reference 13-60)\nALT: 32 U/L (reference 7-45)\nAST: 27 U/L (reference 10-40)\nAlkaline phosphatase: 105 U/L (reference 40-130)\nTotal bilirubin: 0.7 mg/dL (reference 0.2-1.2)\n\nImaging Findings:\nCT abdomen/pelvis: 9 mm fluid-filled appendix with adjacent fat stranding and trace localized fluid. No collection."
+}

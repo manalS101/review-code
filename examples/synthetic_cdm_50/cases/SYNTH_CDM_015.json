@@ -1,0 +1,87 @@
+{
+  "case_id": "SYNTH_CDM_015",
+  "synthetic": true,
+  "history_of_present_illness": "43-year-old woman. One day of left lower abdominal pain and nausea. No vaginal discharge or bleeding; last menstrual period was ten days ago.",
+  "physical_examination": "Focal left lower-quadrant tenderness without diffuse rigidity.",
+  "vital_signs": {
+    "temperature_c": 38.3,
+    "heart_rate_per_min": 106,
+    "blood_pressure_mmhg": "134/70",
+    "respiratory_rate_per_min": 18,
+    "spo2_percent_room_air": 98
+  },
+  "laboratory_tests": {
+    "WBC": {
+      "value": 15.1,
+      "unit": "10^9/L",
+      "reference_range": "4.0-11.0"
+    },
+    "Hemoglobin": {
+      "value": 13.1,
+      "unit": "g/dL",
+      "reference_range": "12.0-17.5"
+    },
+    "Platelets": {
+      "value": 241,
+      "unit": "10^9/L",
+      "reference_range": "150-400"
+    },
+    "Sodium": {
+      "value": 136,
+      "unit": "mmol/L",
+      "reference_range": "135-145"
+    },
+    "Potassium": {
+      "value": 3.7,
+      "unit": "mmol/L",
+      "reference_range": "3.5-5.0"
+    },
+    "Creatinine": {
+      "value": 1.1,
+      "unit": "mg/dL",
+      "reference_range": "0.6-1.3"
+    },
+    "CRP": {
+      "value": 72,
+      "unit": "mg/L",
+      "reference_range": "<5"
+    },
+    "Lipase": {
+      "value": 35,
+      "unit": "U/L",
+      "reference_range": "13-60"
+    },
+    "ALT": {
+      "value": 31,
+      "unit": "U/L",
+      "reference_range": "7-45"
+    },
+    "AST": {
+      "value": 28,
+      "unit": "U/L",
+      "reference_range": "10-40"
+    },
+    "Alkaline phosphatase": {
+      "value": 91,
+      "unit": "U/L",
+      "reference_range": "40-130"
+    },
+    "Total bilirubin": {
+      "value": 0.7,
+      "unit": "mg/dL",
+      "reference_range": "0.2-1.2"
+    },
+    "Serum pregnancy test": {
+      "value": "negative",
+      "unit": null,
+      "reference_range": "negative"
+    }
+  },
+  "imaging": [
+    {
+      "region": "Abdomen/Pelvis",
+      "findings": "CT abdomen/pelvis: inflamed distal descending-colon diverticulum with segmental wall thickening and surrounding stranding. Adnexa unremarkable."
+    }
+  ],
+  "input_case": "History of Present Illness:\n43-year-old woman. One day of left lower abdominal pain and nausea. No vaginal discharge or bleeding; last menstrual period was ten days ago.\n\nPhysical Examination:\nFocal left lower-quadrant tenderness without diffuse rigidity. Temperature 38.3 C; heart rate 106/min; BP 134/70 mmHg; respiratory rate 18/min; SpO2 98% on room air.\n\nLaboratory Tests:\nWBC: 15.1 10^9/L (reference 4.0-11.0)\nHemoglobin: 13.1 g/dL (reference 12.0-17.5)\nPlatelets: 241 10^9/L (reference 150-400)\nSodium: 136 mmol/L (reference 135-145)\nPotassium: 3.7 mmol/L (reference 3.5-5.0)\nCreatinine: 1.1 mg/dL (reference 0.6-1.3)\nCRP: 72 mg/L (reference <5)\nLipase: 35 U/L (reference 13-60)\nALT: 31 U/L (reference 7-45)\nAST: 28 U/L (reference 10-40)\nAlkaline phosphatase: 91 U/L (reference 40-130)\nTotal bilirubin: 0.7 mg/dL (reference 0.2-1.2)\nSerum pregnancy test: negative (reference negative)\n\nImaging Findings:\nCT abdomen/pelvis: inflamed distal descending-colon diverticulum with segmental wall thickening and surrounding stranding. Adnexa unremarkable."
+}

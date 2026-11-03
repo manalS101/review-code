@@ -1,0 +1,1009 @@
+{
+  "clinical_review": {
+    "status": "accepted",
+    "procedure": "Reviewed independently by a medical expert and by a project author. No knowledge base was accepted until every critical item was approved or explicitly flagged for revision. Review was divided by clinical condition.",
+    "medical_expert_specialty": "Cardiology Specialist",
+    "medical_expert_checklist": [
+      "The disease-specific diagnostic framework is clinically appropriate.",
+      "All concepts are correctly classified as diagnostic, supportive, etiologic, severity, complication, or exclusion evidence.",
+      "Every diagnostic rule, criterion, threshold, unit, timing condition, and population restriction is confirmed.",
+      "No unsupported rule was invented, and supportive findings cannot independently confirm the diagnosis.",
+      "The what-does-not-count, contradiction, insufficient-evidence, abstention, and referral rules reflect safe clinical practice.",
+      "Every clinical item is accurately grounded in the cited sources."
+    ],
+    "project_author_checklist": [
+      "All concepts and rules have correct source provenance.",
+      "The JSON structure, concept identifiers, rule references, and value types are valid and consistent.",
+      "Missing evidence remains unknown and cannot accidentally activate a rule.",
+      "The verifier is deterministic and reports the decision, supporting evidence, missing or conflicting evidence, and justification.",
+      "Clear positive, unsupported, incomplete, contradictory, and threshold-boundary cases are tested."
+    ],
+    "revisions_arising_from_review": {
+      "all_knowledge_bases": [
+        "A claim-by-claim audit was introduced. Every diagnostic concept, threshold, and relationship was required to trace to one of the two cited sources. Derived elements, such as language normalization and differential-handling logic, were relabelled as implementation logic rather than guideline facts.",
+        "Each concept was assigned one of four states: present, absent, unknown, or conflicting. Missing documentation remains unknown. Diagnostic, supportive, etiologic, severity, complication, and management evidence are stored separately, so that only explicitly diagnostic evidence can activate the verifier.",
+        "The four knowledge bases keep different decision structures rather than one shared formula: a two-of-three rule for pancreatitis, integrated clinical and imaging assessment for cholecystitis, CT-supported multi-evidence assessment for diverticulitis, and stepwise risk stratification followed by imaging for appendicitis.",
+        "Unsupported or partially supported claims were deleted or rewritten, and explicit cautions were added stating that no official two-of-three rule exists for appendicitis, cholecystitis, or diverticulitis."
+      ],
+      "cholecystitis": [
+        "Six PROVENANCE_NOTE placeholders were replaced with page-verified evidence records.",
+        "Unsupported TG18 details, differential heuristics, and cross-disease thresholds were removed.",
+        "A WSES record was added stating that no individual feature has sufficient power to establish or exclude acute calculous cholecystitis."
+      ]
+    },
+    "known_limitation": "Each condition carries one clinician's assessment, so criterion-level agreement between clinicians is not available. Specialty-matched review by two independent clinicians per condition, with adjudication of disagreement, precedes clinical use.",
+    "record_of_review": "Supplementary Material, section 4 (expert review and acceptance checklist) and Table S1 (specific improvements introduced during iterative revision)."
+  },
+  "kb_id": "cholecystitis_integrated_diagnostic_kb_v2_normalized",
+  "schema_version": "2.0",
+  "disease": {
+    "project_label": "cholecystitis",
+    "canonical_name": "acute_calculus_cholecystitis",
+    "scope": "acute calculus cholecystitis (ACC) — acute cholecystitis clinical presentation, common bile duct stone (CBDS) risk assessment in ACC, diagnostic imaging choices, complication flags, differential diagnoses",
+    "intended_use": "Research-only LLM diagnostic agent support. Not for clinical care."
+  },
+  "version": {
+    "version": "2.0-normalized",
+    "created_utc": "2026-05-16T00:00:00Z",
+    "construction_policy": "One integrated KB with fact-level provenance. WSES 2020 ACC guideline is the primary diagnostic-rule authority; StatPearls 2025 is used for clinical language, imaging descriptive findings, complications, and differentials.",
+    "enhancement_policy": "Normalized to diagnostic_kb_schema_v2; added evidence_interpretation_layer, contradictory_and_uncertainty_layer, clinical_nlp_context_layer; added acknowledgment of Tokyo Guidelines TG18 as an alternative formal diagnostic framework cited within WSES 2020. No core source-grounded claims changed."
+  },
+  "sources": [
+    {
+      "source_id": "WSES_ACC_2020",
+      "title": "2020 World Society of Emergency Surgery updated guidelines for the diagnosis and treatment of acute calculus cholecystitis",
+      "role": "primary guideline and rule authority for ACC diagnostic framework, imaging choices, CBDS risk stratification, and management-context rules",
+      "evidence_type": "international guideline using GRADE methodology",
+      "grounding_notes": "Use WSES for explicit diagnostic framework and rule constraints. Do not invent a single-feature or n-of-m diagnostic rule because WSES explicitly states no single clinical or lab finding can establish/exclude ACC and the best combination is unknown."
+    },
+    {
+      "source_id": "STATPEARLS_ACUTE_CHOLECYSTITIS_2025",
+      "title": "Acute Cholecystitis - StatPearls - NCBI Bookshelf",
+      "role": "clinical presentation, symptom language, ultrasound/HIDA descriptive findings, complications, differential diagnosis, and LLM extraction vocabulary",
+      "evidence_type": "review/educational clinical reference",
+      "grounding_notes": "Use StatPearls to map free-text clinical notes to concepts, not to override WSES diagnostic constraints."
+    },
+    {
+      "source_id": "TG18_REFERENCE_ONLY",
+      "title": "Tokyo Guidelines 2018 (TG18) for acute cholecystitis diagnosis and severity grading",
+      "role": "acknowledgment_reference_only",
+      "notes": "WSES 2020 mentions Tokyo Guidelines as a comparator and notes that TG diagnostic criteria include clinical signs, laboratory tests, and imaging features. This KB does NOT encode TG18 criteria or severity grading because the TG18 primary source PDF was not available for direct verification."
+    }
+  ],
+  "scientific_guardrails": {
+    "no_fake_n_of_m_rule": true,
+    "rationale": "WSES 2020 explicitly states that no single clinical or laboratory finding can establish or exclude ACC, and that the best combination of history, examination, laboratory tests, and imaging is unknown. WSES does not define a 2-of-3 or other n-of-m diagnostic rule for this KB.",
+    "diagnosis_should_not_be_based_on": [
+      "single clinical finding alone (per WSES)",
+      "single laboratory finding alone (per WSES)",
+      "Murphy sign alone",
+      "gallstones alone (could be incidental)",
+      "elevated LFTs/bilirubin alone for CBDS assessment"
+    ],
+    "must_report_uncertainty_when": [
+      "imaging is unavailable",
+      "only symptoms are documented",
+      "inflammatory markers are absent or normal but pain persists",
+      "features could equally fit pancreatitis, choledocholithiasis, cholangitis, or hepatitis"
+    ]
+  },
+  "diagnostic_framework": {
+    "framework_type": "integrated_assessment",
+    "primary_rule": {
+      "id": "WSES_ACC_2020_INTEGRATED_ASSESSMENT",
+      "role": "diagnostic_framework",
+      "logic": [
+        "Use a combination of detailed history, complete clinical examination, laboratory tests, and imaging investigations for diagnosis.",
+        "Do not rely on a single clinical or laboratory finding to establish or exclude ACC.",
+        "Abdominal ultrasound is the preferred initial imaging modality.",
+        "HIDA scan has the highest sensitivity and specificity but practical use is limited; consider when US/CT remain unclear.",
+        "Separately assess common bile duct stone (CBDS) risk — never use elevated LFTs/bilirubin or CBD diameter alone.",
+        "(Alternative framework note: WSES discusses Tokyo Guidelines as a comparator, but this KB does not encode TG18 because TG18 primary-source text was not available for direct verification.)"
+      ],
+      "source": "WSES_ACC_2020",
+      "evidence_grade": "WSES strong recommendation against single-feature reliance (high-quality evidence); weak recommendation for combined assessment (very-low-quality evidence)"
+    },
+    "diagnostic_outputs": [
+      "confirmed_or_highly_supported_ACC",
+      "probable_ACC",
+      "possible_ACC_needs_more_workup",
+      "alternative_diagnosis_more_likely",
+      "insufficient_evidence"
+    ],
+    "minimum_agent_output_fields": [
+      "diagnosis_label",
+      "risk_level",
+      "clinical_evidence_present",
+      "lab_evidence_present",
+      "imaging_evidence_present",
+      "cbds_risk_band",
+      "complication_flags",
+      "differential_considered",
+      "reasoning_trace",
+      "source_grounding"
+    ]
+  },
+  "clinical_concepts": {
+    "symptoms": [
+      {
+        "id": "ruq_pain_or_tenderness",
+        "display": "right upper quadrant pain or tenderness",
+        "role": "clinical_supportive_feature",
+        "source": [
+          "WSES_ACC_2020",
+          "STATPEARLS_ACUTE_CHOLECYSTITIS_2025"
+        ],
+        "synonyms": [
+          "RUQ pain",
+          "right upper quadrant tenderness",
+          "right upper quadrant abdominal pain",
+          "right hypochondrial pain"
+        ],
+        "maps_to": "clinical_picture_compatible_with_ACC"
+      },
+      {
+        "id": "fever",
+        "display": "fever",
+        "role": "clinical_supportive_feature",
+        "source": [
+          "WSES_ACC_2020"
+        ],
+        "maps_to": "clinical_picture_compatible_with_ACC"
+      },
+      {
+        "id": "vomiting_or_food_intolerance",
+        "display": "vomiting or food intolerance",
+        "role": "clinical_supportive_feature",
+        "source": [
+          "WSES_ACC_2020",
+          "STATPEARLS_ACUTE_CHOLECYSTITIS_2025"
+        ],
+        "synonyms": [
+          "vomiting",
+          "nausea",
+          "food intolerance",
+          "fatty food intolerance",
+          "greasy food intolerance",
+          "postprandial RUQ pain"
+        ],
+        "maps_to": "clinical_picture_compatible_with_ACC"
+      },
+      {
+        "id": "radiation_to_right_shoulder_or_midback",
+        "display": "pain radiating to right shoulder or midback",
+        "role": "clinical_language_mapping",
+        "source": [
+          "STATPEARLS_ACUTE_CHOLECYSTITIS_2025"
+        ],
+        "maps_to": "clinical_picture_compatible_with_ACC"
+      }
+    ],
+    "physical_exam": [
+      {
+        "id": "murphy_sign",
+        "display": "Murphy sign",
+        "role": "clinical_supportive_feature",
+        "source": [
+          "WSES_ACC_2020",
+          "STATPEARLS_ACUTE_CHOLECYSTITIS_2025"
+        ],
+        "maps_to": "clinical_picture_compatible_with_ACC"
+      }
+    ],
+    "temporal_features": [
+      {
+        "id": "pain_duration_longer_than_6_hours",
+        "display": "persistent pain lasting longer than 6 hours",
+        "role": "clinical_language_mapping",
+        "source": [
+          "STATPEARLS_ACUTE_CHOLECYSTITIS_2025"
+        ],
+        "maps_to": "clinical_picture_compatible_with_ACC"
+      }
+    ]
+  },
+  "laboratory_evidence": {
+    "general": [
+      {
+        "id": "elevated_crp",
+        "display": "elevated C-reactive protein",
+        "role": "inflammatory_supportive_marker",
+        "source": "WSES_ACC_2020",
+        "diagnostic_use": "supportive; not alone confirmatory"
+      },
+      {
+        "id": "elevated_wbc",
+        "display": "elevated white blood cell count",
+        "role": "inflammatory_supportive_marker",
+        "source": [
+          "WSES_ACC_2020",
+          "STATPEARLS_ACUTE_CHOLECYSTITIS_2025"
+        ],
+        "diagnostic_use": "supportive; not alone confirmatory"
+      },
+      {
+        "id": "abnormal_liver_enzymes",
+        "display": "increased ALT/AST",
+        "role": "supportive_or_cbds_context",
+        "source": "STATPEARLS_ACUTE_CHOLECYSTITIS_2025",
+        "diagnostic_use": "supportive; do NOT use alone to identify CBDS"
+      },
+      {
+        "id": "hyperbilirubinemia",
+        "display": "hyperbilirubinemia",
+        "role": "cbds_context_marker",
+        "source": "STATPEARLS_ACUTE_CHOLECYSTITIS_2025",
+        "diagnostic_use": "raises CBD obstruction suspicion; do NOT use alone"
+      },
+      {
+        "id": "amylase_lipase_for_pancreatitis_ruleout",
+        "display": "amylase / lipase (to rule out concurrent pancreatitis)",
+        "role": "differential_workup",
+        "source": "STATPEARLS_ACUTE_CHOLECYSTITIS_2025",
+        "diagnostic_use": "differential ruleout"
+      },
+      {
+        "id": "alp",
+        "display": "alkaline phosphatase",
+        "role": "cbds_workup",
+        "source": "WSES_ACC_2020",
+        "diagnostic_use": "part of CBDS LFT panel"
+      },
+      {
+        "id": "ggt",
+        "display": "gamma-glutamyl transferase",
+        "role": "cbds_workup",
+        "source": "WSES_ACC_2020",
+        "diagnostic_use": "part of CBDS LFT panel"
+      }
+    ],
+    "thresholds": [
+      {
+        "id": "total_bilirubin_gt_4",
+        "marker": "total bilirubin",
+        "operator": ">",
+        "value": 4,
+        "unit": "mg/dL",
+        "meaning": "Moderate-risk feature for CBDS (per WSES CBDS assessment).",
+        "role": "cbds_moderate_risk_marker",
+        "source": "WSES_ACC_2020"
+      },
+      {
+        "id": "total_bilirubin_1_8_to_4_with_cbd_dilation",
+        "marker": "total bilirubin",
+        "operator": "range",
+        "value": "1.8-4 with enlarged CBD on US",
+        "unit": "mg/dL",
+        "meaning": "Moderate-risk combined feature for CBDS.",
+        "role": "cbds_moderate_risk_marker",
+        "source": "WSES_ACC_2020"
+      }
+    ],
+    "normal_lab_caution": {
+      "statement": "Normal labs do not exclude ACC. WSES states no single laboratory finding can establish or exclude the diagnosis.",
+      "source": "WSES_ACC_2020"
+    }
+  },
+  "imaging_evidence": {
+    "pathway_policy": [
+      {
+        "id": "us_first_choice",
+        "statement": "Abdominal ultrasound is the preferred initial imaging for suspected ACC.",
+        "source": "WSES_ACC_2020",
+        "evidence_grade": "strong recommendation, high-quality evidence"
+      },
+      {
+        "id": "hida_when_us_ct_unclear",
+        "statement": "HIDA scan has highest sensitivity and specificity but practical use is limited; consider when US/CT remain unclear.",
+        "source": "WSES_ACC_2020"
+      },
+      {
+        "id": "ct_when_complications_suspected",
+        "statement": "CT may be used when complications are suspected; CT diagnostic accuracy is poor compared with HIDA per WSES.",
+        "source": [
+          "WSES_ACC_2020",
+          "STATPEARLS_ACUTE_CHOLECYSTITIS_2025"
+        ]
+      },
+      {
+        "id": "mrcp_eus_for_moderate_cbds_risk",
+        "statement": "For moderate CBDS risk: MRCP, EUS, IOC, or LUS depending on local expertise.",
+        "source": "WSES_ACC_2020",
+        "evidence_grade": "strong recommendation, high-quality evidence"
+      }
+    ],
+    "us_findings": [
+      {
+        "id": "abdominal_ultrasound_initial",
+        "display": "abdominal ultrasound as preferred initial imaging",
+        "role": "preferred_initial_imaging",
+        "source": [
+          "WSES_ACC_2020",
+          "STATPEARLS_ACUTE_CHOLECYSTITIS_2025"
+        ]
+      },
+      {
+        "id": "imaging_gallbladder_inflammation",
+        "display": "imaging signs suggestive of gallbladder inflammation",
+        "role": "diagnostic_supportive_evidence",
+        "source": [
+          "WSES_ACC_2020"
+        ]
+      },
+      {
+        "id": "ultrasound_wall_thickening_gt_3mm",
+        "display": "gallbladder wall thickening >3 mm",
+        "role": "imaging_supportive_feature",
+        "source": [
+          "STATPEARLS_ACUTE_CHOLECYSTITIS_2025"
+        ]
+      },
+      {
+        "id": "ultrasound_gallstones",
+        "display": "gallstones on ultrasound",
+        "role": "etiology_and_imaging_support",
+        "source": [
+          "WSES_ACC_2020",
+          "STATPEARLS_ACUTE_CHOLECYSTITIS_2025"
+        ]
+      },
+      {
+        "id": "hidascan_nonfilling_gallbladder",
+        "display": "HIDA scan non-filling of gallbladder",
+        "role": "diagnostic_clarification_when_us_ct_unclear",
+        "source": [
+          "WSES_ACC_2020",
+          "STATPEARLS_ACUTE_CHOLECYSTITIS_2025"
+        ]
+      }
+    ],
+    "ct_findings": [
+      {
+        "id": "ct_supportive_findings",
+        "display": "CT findings suggestive of acute cholecystitis",
+        "role": "supportive_imaging_when_ct_performed",
+        "source": [
+          "STATPEARLS_ACUTE_CHOLECYSTITIS_2025"
+        ]
+      }
+    ],
+    "normalization_notes": {
+      "us_positive_features": [
+        "gallbladder wall thickening >3 mm",
+        "pericholecystic fluid",
+        "gallbladder distention",
+        "gallstones",
+        "sonographic Murphy sign",
+        "CBD dilation (CBDS risk-context feature; not an ACC-confirming gallbladder inflammation feature by itself)"
+      ],
+      "hida_positive_features": [
+        "nonvisualization/non-filling of gallbladder"
+      ],
+      "ct_positive_features": [
+        "gallbladder wall thickening",
+        "pericholecystic fluid",
+        "distention",
+        "surrounding inflammation",
+        "gallstones"
+      ],
+      "caution": "Gallstones alone may represent gallstone disease without active ACC; combine with clinical/laboratory context and imaging signs of gallbladder inflammation before labeling ACC."
+    }
+  },
+  "cbds_assessment": {
+    "purpose": "Assess associated common bile duct stones in patients with ACC.",
+    "source_authority": "WSES_ACC_2020",
+    "rules": [
+      {
+        "id": "cbds_lft_bilirubin_not_alone",
+        "statement": "Elevated LFTs or bilirubin alone should not be used as the only method to identify CBDS in ACC; further diagnostic tests are recommended.",
+        "quality_of_evidence": "moderate",
+        "strength_of_recommendation": "strong"
+      },
+      {
+        "id": "cbds_lfts_and_us_all_acc",
+        "statement": "Perform LFTs including ALT, AST, bilirubin, ALP, GGT and abdominal US to assess CBDS risk in all ACC patients.",
+        "quality_of_evidence": "low",
+        "strength_of_recommendation": "weak"
+      },
+      {
+        "id": "cbds_us_stone_high_risk",
+        "statement": "Visualization of a stone in the common bile duct on transabdominal US can predict CBDS and WSES considers only patients with evidence of CBDS at abdominal US as high risk for direct diagnostic/therapeutic ERCP.",
+        "quality_of_evidence": "very low",
+        "strength_of_recommendation": "weak"
+      },
+      {
+        "id": "cbds_cbd_diameter_not_alone",
+        "statement": "Increased common bile duct diameter alone is insufficient to identify CBDS in ACC; further diagnostic tests are recommended.",
+        "quality_of_evidence": "high",
+        "strength_of_recommendation": "strong"
+      },
+      {
+        "id": "cbds_moderate_risk_second_level",
+        "statement": "Patients with moderate CBDS risk should undergo MRCP, EUS, IOC, or LUS depending on local expertise and availability.",
+        "quality_of_evidence": "high",
+        "strength_of_recommendation": "strong"
+      }
+    ],
+    "risk_features": {
+      "high_risk": [
+        "common_bile_duct_stone_visualized_on_ultrasound"
+      ],
+      "moderate_risk": [
+        "total_bilirubin_greater_than_4_mg_dl",
+        "enlarged_common_bile_duct_on_ultrasound_with_bilirubin_1_8_to_4_mg_dl"
+      ],
+      "low_risk": [
+        "no_high_or_moderate_risk_features_documented"
+      ]
+    }
+  },
+  "complications": {
+    "features": [
+      {
+        "id": "gangrenous_cholecystitis",
+        "role": "complication_flag",
+        "source": [
+          "STATPEARLS_ACUTE_CHOLECYSTITIS_2025"
+        ]
+      },
+      {
+        "id": "gallbladder_perforation",
+        "role": "complication_flag",
+        "source": [
+          "STATPEARLS_ACUTE_CHOLECYSTITIS_2025"
+        ]
+      },
+      {
+        "id": "emphysematous_cholecystitis",
+        "role": "complication_flag",
+        "source": [
+          "STATPEARLS_ACUTE_CHOLECYSTITIS_2025"
+        ]
+      },
+      {
+        "id": "intraabdominal_abscess",
+        "role": "complication_flag",
+        "source": [
+          "STATPEARLS_ACUTE_CHOLECYSTITIS_2025"
+        ]
+      },
+      {
+        "id": "sepsis",
+        "role": "complication_flag",
+        "source": [
+          "STATPEARLS_ACUTE_CHOLECYSTITIS_2025"
+        ]
+      }
+    ]
+  },
+  "differential_diagnosis": {
+    "source_policy": "Differential guardrails to prevent overcalling ACC when alternative explanations are likely.",
+    "items": [
+      {
+        "diagnosis": "biliary_colic",
+        "overlap": [
+          "RUQ pain",
+          "postprandial pain",
+          "nausea/vomiting"
+        ],
+        "distinguishing_clues": [
+          "StatPearls links biliary colic to RUQ or epigastric pain/discomfort after gallstone obstruction; the source documents do not provide a complete rule-out rule for biliary colic versus ACC.",
+          "Not source-verified in the source documents; do not use as a source-grounded distinguishing clue unless additional disease-specific references are added.",
+          "Not source-verified in the source documents; do not use as a source-grounded distinguishing clue unless additional disease-specific references are added."
+        ],
+        "agent_action": "Consider as differential when ACC source-grounded inflammatory/imaging support is absent; do not treat this as a sourced diagnostic rule."
+      },
+      {
+        "diagnosis": "choledocholithiasis",
+        "overlap": [
+          "RUQ pain",
+          "jaundice"
+        ],
+        "distinguishing_clues": [
+          "CBDS risk features should be assessed using WSES CBDS risk stratification rather than LFTs/bilirubin or CBD diameter alone.",
+          "Not source-verified in the source documents; do not use as a source-grounded distinguishing clue unless additional disease-specific references are added.",
+          "Not source-verified in the source documents; do not use as a source-grounded distinguishing clue unless additional disease-specific references are added."
+        ],
+        "agent_action": "Assess CBDS risk per WSES; do not use elevated LFTs/bilirubin or CBD diameter alone to diagnose CBDS."
+      },
+      {
+        "diagnosis": "cholangitis",
+        "overlap": [
+          "RUQ pain",
+          "fever",
+          "jaundice"
+        ],
+        "distinguishing_clues": [
+          "Listed by StatPearls as a differential diagnosis; specific distinguishing clues are not fully specified in the source text.",
+          "Not source-verified in the source documents; do not use as a source-grounded distinguishing clue unless additional disease-specific references are added."
+        ],
+        "agent_action": "Consider only when patient-record evidence supports this alternative; label reasoning as differential/implementation logic, not a directly sourced diagnostic rule."
+      },
+      {
+        "diagnosis": "acute_pancreatitis",
+        "overlap": [
+          "upper abdominal pain",
+          "nausea/vomiting"
+        ],
+        "distinguishing_clues": [
+          "Listed by StatPearls as a differential diagnosis; specific distinguishing clues are not fully specified in the source text.",
+          "Not source-verified in the source documents; do not use as a source-grounded distinguishing clue unless additional disease-specific references are added.",
+          "Not source-verified in the source documents; do not use as a source-grounded distinguishing clue unless additional disease-specific references are added."
+        ],
+        "agent_action": "Consider only when patient-record evidence supports this alternative; label reasoning as differential/implementation logic, not a directly sourced diagnostic rule."
+      },
+      {
+        "diagnosis": "hepatitis",
+        "overlap": [
+          "RUQ discomfort",
+          "nausea"
+        ],
+        "distinguishing_clues": [
+          "Listed by StatPearls as a differential diagnosis; specific distinguishing clues are not fully specified in the source text.",
+          "Not source-verified in the source documents; do not use as a source-grounded distinguishing clue unless additional disease-specific references are added.",
+          "Not source-verified in the source documents; do not use as a source-grounded distinguishing clue unless additional disease-specific references are added."
+        ],
+        "agent_action": "Consider only when patient-record evidence supports this alternative; label reasoning as differential/implementation logic, not a directly sourced diagnostic rule."
+      },
+      {
+        "diagnosis": "gastritis_or_peptic_ulcer_disease",
+        "overlap": [
+          "epigastric/RUQ discomfort",
+          "postprandial pain"
+        ],
+        "distinguishing_clues": [
+          "Listed by StatPearls as a differential diagnosis; specific distinguishing clues are not fully specified in the source text.",
+          "Not source-verified in the source documents; do not use as a source-grounded distinguishing clue unless additional disease-specific references are added.",
+          "Not source-verified in the source documents; do not use as a source-grounded distinguishing clue unless additional disease-specific references are added."
+        ],
+        "agent_action": "Consider only when patient-record evidence supports this alternative; label reasoning as differential/implementation logic, not a directly sourced diagnostic rule."
+      },
+      {
+        "diagnosis": "hiatal_hernia_or_gerd",
+        "overlap": [
+          "upper abdominal/chest discomfort"
+        ],
+        "distinguishing_clues": [
+          "Listed by StatPearls as a differential diagnosis; specific distinguishing clues are not fully specified in the source text.",
+          "Not source-verified in the source documents; do not use as a source-grounded distinguishing clue unless additional disease-specific references are added."
+        ],
+        "agent_action": "Consider only when patient-record evidence supports this alternative; label reasoning as differential/implementation logic, not a directly sourced diagnostic rule."
+      },
+      {
+        "diagnosis": "appendicitis",
+        "overlap": [
+          "abdominal pain",
+          "nausea/vomiting",
+          "fever"
+        ],
+        "distinguishing_clues": [
+          "Listed by StatPearls as a differential diagnosis; specific distinguishing clues are not fully specified in the source text.",
+          "Not source-verified in the source documents; do not use as a source-grounded distinguishing clue unless additional disease-specific references are added."
+        ],
+        "agent_action": "Consider only when patient-record evidence supports this alternative; label reasoning as differential/implementation logic, not a directly sourced diagnostic rule."
+      },
+      {
+        "diagnosis": "mesenteric_ischemia",
+        "overlap": [
+          "severe abdominal pain"
+        ],
+        "distinguishing_clues": [
+          "Listed by StatPearls as a differential diagnosis; specific distinguishing clues are not fully specified in the source text.",
+          "Not source-verified in the source documents; do not use as a source-grounded distinguishing clue unless additional disease-specific references are added."
+        ],
+        "agent_action": "Consider only when patient-record evidence supports this alternative; label reasoning as differential/implementation logic, not a directly sourced diagnostic rule."
+      },
+      {
+        "diagnosis": "small_bowel_obstruction",
+        "overlap": [
+          "abdominal pain",
+          "vomiting"
+        ],
+        "distinguishing_clues": [
+          "Listed by StatPearls as a differential diagnosis; specific distinguishing clues are not fully specified in the source text.",
+          "Not source-verified in the source documents; do not use as a source-grounded distinguishing clue unless additional disease-specific references are added."
+        ],
+        "agent_action": "Consider only when patient-record evidence supports this alternative; label reasoning as differential/implementation logic, not a directly sourced diagnostic rule."
+      }
+    ]
+  },
+  "agent_verifier": {
+    "input_schema": {
+      "symptoms": "list of extracted symptoms with evidence text and negation",
+      "physical_exam": "list of signs including Murphy sign with evidence text",
+      "labs": "structured WBC, CRP, LFTs, bilirubin, ALP, GGT, lipase/amylase",
+      "imaging": "structured US/CT/HIDA/MRCP findings with modality and report text",
+      "cbds_features": "CBD stone on US, CBD diameter, bilirubin level",
+      "timeline": "hours/days from symptom onset"
+    },
+    "decision_algorithm": [
+      {
+        "step": 1,
+        "name": "Single-feature exclusion",
+        "logic": "Do not confirm ACC from any single symptom, sign, lab, or imaging detail in isolation.",
+        "source": "WSES_ACC_2020"
+      },
+      {
+        "step": 2,
+        "name": "Confirm ACC via integrated assessment (clinical + lab + imaging)",
+        "logic": "If compatible clinical picture, supportive laboratory inflammation, and imaging signs of gallbladder inflammation/gallstones are present, classify as confirmed_or_highly_supported_ACC as an implementation label derived from WSES combined-assessment guidance; WSES does not define this exact output label.",
+        "source": "WSES_ACC_2020"
+      },
+      {
+        "step": 3,
+        "name": "Possible ACC when imaging absent or unclear",
+        "logic": "If compatible clinical picture is present but imaging is absent or unclear, classify as possible_ACC_needs_more_workup as an implementation label; WSES supports further imaging/combined assessment but does not define this exact output label.",
+        "source": "WSES_ACC_2020"
+      },
+      {
+        "step": 4,
+        "name": "Alternative diagnosis branch",
+        "logic": "If source-supported evidence points away from ACC or toward a listed differential diagnosis, classify as alternative_diagnosis_more_likely as implementation logic and report the evidentiary basis.",
+        "source": "WSES_ACC_2020"
+      },
+      {
+        "step": 5,
+        "name": "Separate CBDS risk assessment",
+        "logic": "Always separately assess CBDS risk; do not use elevated LFTs or bilirubin alone as proof of CBDS.",
+        "source": "WSES_ACC_2020"
+      },
+      {
+        "step": 6,
+        "name": "Complication flagging",
+        "logic": "Flag complications when gangrene, perforation, emphysematous cholecystitis, abscess, sepsis, or retained bile duct stones are documented.",
+        "source": [
+          "WSES_ACC_2020",
+          "STATPEARLS_ACUTE_CHOLECYSTITIS_2025"
+        ]
+      }
+    ],
+    "abstention_rules": [
+      "If only RUQ pain is present without imaging/labs, do NOT confirm — return possible_ACC_needs_more_workup.",
+      "If only Murphy sign is positive without other supportive evidence, do NOT confirm.",
+      "If gallstones are present without clinical/laboratory context or imaging signs of gallbladder inflammation, do not confirm ACC; label as gallstone disease or insufficient evidence according to available evidence.",
+      "For CBDS assessment, do NOT use elevated LFTs or bilirubin alone.",
+      "Do NOT invent a 2-of-3 diagnostic rule for ACC — WSES does not provide one."
+    ],
+    "minimum_safe_output_contract": {
+      "required_fields": [
+        "diagnosis_label",
+        "clinical_evidence_present",
+        "lab_evidence_present",
+        "imaging_evidence_present",
+        "cbds_risk_band",
+        "complication_flags",
+        "differential_considered",
+        "confidence_statement",
+        "source_grounding"
+      ],
+      "forbidden_outputs": [
+        "ACC is ruled out because one feature is absent",
+        "ACC is confirmed by a single lab",
+        "CBDS is confirmed by elevated bilirubin alone",
+        "A formal 2-of-3 diagnostic rule exists for cholecystitis"
+      ],
+      "recommended_confidence_labels": [
+        "insufficient_evidence",
+        "possible_ACC_needs_more_workup",
+        "probable_ACC",
+        "confirmed_or_highly_supported_ACC"
+      ]
+    }
+  },
+  "evidence_interpretation_layer": {
+    "purpose": "Convert extracted features into conservative diagnostic support patterns for the LLM agent.",
+    "global_rules": [
+      "Do not confirm ACC from any single symptom, sign, lab, or imaging detail in isolation.",
+      "Prefer outputs: insufficient_evidence, possible_ACC_needs_more_workup, probable_ACC, confirmed_or_highly_supported_ACC.",
+      "CBDS risk is assessed separately from ACC diagnosis.",
+      "Preserve both supportive and contradictory evidence; lower confidence when conflict exists."
+    ],
+    "patterns": [
+      {
+        "pattern_id": "classic_clinical_acc_pattern",
+        "positive_core_features": [
+          "ruq_pain_or_tenderness",
+          "murphy_sign"
+        ],
+        "supportive_features": [
+          "fever",
+          "vomiting_or_food_intolerance",
+          "elevated_wbc",
+          "elevated_crp"
+        ],
+        "interpretation": "possible_or_probable_ACC_needs_imaging",
+        "confirmation_requirement": "Imaging support can increase support for ACC, but WSES states the best feature combination is unknown; do not treat this as a formal rule.",
+        "source": [
+          "WSES_ACC_2020",
+          "STATPEARLS_ACUTE_CHOLECYSTITIS_2025"
+        ]
+      },
+      {
+        "pattern_id": "imaging_supported_acc_pattern",
+        "positive_core_features": [
+          "ultrasound_wall_thickening_gt_3mm",
+          "ultrasound_gallstones"
+        ],
+        "supportive_features": [
+          "pericholecystic_fluid",
+          "sonographic_murphy_sign",
+          "gallbladder_distention"
+        ],
+        "interpretation": "confirmed_or_highly_supported_ACC_when_clinically_compatible",
+        "caution": "Gallstones without accompanying inflammatory clinical/lab context or imaging signs of gallbladder inflammation should not be used alone to label ACC.",
+        "source": [
+          "WSES_ACC_2020",
+          "STATPEARLS_ACUTE_CHOLECYSTITIS_2025"
+        ]
+      },
+      {
+        "pattern_id": "hida_supported_pattern",
+        "positive_core_features": [
+          "hidascan_nonfilling_gallbladder"
+        ],
+        "interpretation": "highly_supported_ACC_when_clinically_compatible",
+        "caution": "HIDA has the highest sensitivity/specificity among compared modalities in WSES; practical use is limited, and the KB should still report clinical context.",
+        "source": [
+          "WSES_ACC_2020",
+          "STATPEARLS_ACUTE_CHOLECYSTITIS_2025"
+        ]
+      },
+      {
+        "pattern_id": "gallstones_only_pattern",
+        "positive_core_features": [
+          "ultrasound_gallstones"
+        ],
+        "typical_missing_items": [
+          "wall_thickening",
+          "pericholecystic_fluid",
+          "fever_or_inflammatory_markers"
+        ],
+        "interpretation": "biliary_disease_likely_not_active_ACC",
+        "caution": "StatPearls notes incidental gallstones in asymptomatic patients; WSES states no single feature should establish ACC. Do not call ACC from gallstones alone.",
+        "source": [
+          "WSES_ACC_2020",
+          "STATPEARLS_ACUTE_CHOLECYSTITIS_2025"
+        ]
+      },
+      {
+        "pattern_id": "cbds_high_risk_pattern",
+        "positive_core_features": [
+          "cbd_stone_on_us"
+        ],
+        "interpretation": "high_cbds_risk",
+        "action_for_agent": "Per WSES, only patients with CBD stone visualized on US are high-risk for direct ERCP. Flag for biliary intervention pathway.",
+        "source": "WSES_ACC_2020"
+      },
+      {
+        "pattern_id": "cbds_moderate_risk_pattern",
+        "positive_core_features": [
+          "total_bilirubin_gt_4 OR (bilirubin_1.8_to_4 AND cbd_dilation)"
+        ],
+        "interpretation": "moderate_cbds_risk",
+        "action_for_agent": "Per WSES, perform MRCP/EUS/IOC/LUS as second-level test.",
+        "source": "WSES_ACC_2020"
+      },
+      {
+        "pattern_id": "complicated_acc_pattern",
+        "positive_core_features": [
+          "any_of: gangrenous_cholecystitis, gallbladder_perforation, emphysematous_cholecystitis, intraabdominal_abscess, sepsis"
+        ],
+        "interpretation": "complicated_ACC_red_flag",
+        "action_for_agent": "Flag documented complications; escalation/management decisions are outside this diagnostic KB unless separately sourced.",
+        "source": "STATPEARLS_ACUTE_CHOLECYSTITIS_2025"
+      }
+    ]
+  },
+  "contradictory_and_uncertainty_layer": {
+    "purpose": "Prevent LLM overdiagnosis by representing negative or alternative-direction evidence.",
+    "contradictory_or_confidence_lowering_features": [
+      {
+        "id": "no_ruq_pain_or_tenderness",
+        "meaning": "Lowers ACC support when repeated exams document no RUQ pain/tenderness; this is an inference from WSES listing RUQ pain/tenderness as a useful feature, not a WSES exclusion rule.",
+        "effect": "lower_confidence",
+        "source": "reasonable_inference_from_WSES_ACC_2020"
+      },
+      {
+        "id": "normal_inflammatory_markers_with_brief_pain",
+        "meaning": "Brief pain with normal inflammatory markers may fit a non-ACC biliary presentation, but the source documents do not provide a complete exclusion rule.",
+        "effect": "consider_differential",
+        "source": "reasonable_inference_from_STATPEARLS_AND_WSES"
+      },
+      {
+        "id": "epigastric_rather_than_ruq",
+        "meaning": "Epigastric pain overlaps with biliary colic and several listed differentials; localization alone should not decide the diagnosis.",
+        "effect": "consider_differential",
+        "source": "STATPEARLS_ACUTE_CHOLECYSTITIS_2025"
+      },
+      {
+        "id": "gallstones_without_inflammatory_imaging_features",
+        "meaning": "Incidental gallstones; do NOT label ACC.",
+        "effect": "lower_confidence",
+        "source": [
+          "WSES_ACC_2020",
+          "STATPEARLS_ACUTE_CHOLECYSTITIS_2025"
+        ]
+      },
+      {
+        "id": "normal_us_with_persistent_pain",
+        "meaning": "Normal US does not fully exclude ACC; consider HIDA or CT if suspicion persists.",
+        "effect": "uncertainty_or_escalate",
+        "source": "WSES_ACC_2020"
+      },
+      {
+        "id": "lipase_3x_uln_pattern",
+        "meaning": "Elevated amylase/lipase supports pancreatitis workup; the cholecystitis sources do not provide a 3× ULN pancreatitis diagnostic threshold.",
+        "effect": "consider_differential",
+        "source": "derived_external_threshold_not_source_verified"
+      },
+      {
+        "id": "charcot_triad_pattern",
+        "meaning": "Cholangitis is listed by StatPearls as a differential diagnosis; Charcot triad detail is external clinical knowledge unless separately sourced.",
+        "effect": "consider_differential",
+        "source": "derived_external_clinical_knowledge"
+      },
+      {
+        "id": "marked_transaminitis",
+        "meaning": "Hepatitis is listed by StatPearls as a differential diagnosis; “marked transaminitis” as a distinguishing rule is external clinical reasoning unless separately sourced.",
+        "effect": "consider_differential",
+        "source": "derived_external_clinical_knowledge"
+      },
+      {
+        "id": "elevated_bilirubin_alone_for_cbds",
+        "meaning": "Per WSES, elevated bilirubin alone is insufficient for CBDS — require further imaging.",
+        "effect": "lower_confidence_with_caution",
+        "source": "WSES_ACC_2020"
+      }
+    ],
+    "required_agent_behavior": [
+      "Report contradictory evidence (normal labs / unremarkable imaging) explicitly; never hide them.",
+      "Always present CBDS risk band separately from ACC diagnosis.",
+      "State what additional evidence would move case from possible_ACC to probable_ACC or confirmed."
+    ]
+  },
+  "clinical_nlp_context_layer": {
+    "purpose": "Make extraction safer by tracking negation, temporality, and experiencer per feature.",
+    "context_fields_required_per_feature": [
+      "present",
+      "negated",
+      "uncertain",
+      "historical",
+      "resolved",
+      "family_history_only",
+      "hypothetical_or_rule_out",
+      "evidence_text",
+      "section",
+      "timestamp_or_relative_time_if_available"
+    ],
+    "temporal_interpretation_rules": [
+      {
+        "id": "pain_duration_gt_6h_progression",
+        "rule": "StatPearls states acute calculous cholecystitis develops with persistent cystic-duct obstruction and is typically confirmed when pain lasts longer than 6 hours; do not encode a separate biliary-colic <6h exclusion rule unless separately sourced.",
+        "source": "STATPEARLS_ACUTE_CHOLECYSTITIS_2025"
+      },
+      {
+        "id": "postprandial_pattern",
+        "rule": "StatPearls states episodes frequently follow high-fat foods and describes greasy/fatty-food intolerance; use as clinical language mapping, not a stand-alone diagnostic rule.",
+        "source": "STATPEARLS_ACUTE_CHOLECYSTITIS_2025"
+      },
+      {
+        "id": "acute_to_complicated_progression",
+        "rule": "StatPearls states untreated acute cholecystitis can progress to gangrene, perforation, emphysematous cholecystitis, sepsis, and potentially death; the source text does not specify a universal number of days.",
+        "source": "STATPEARLS_ACUTE_CHOLECYSTITIS_2025"
+      }
+    ],
+    "negation_examples": [
+      {
+        "text_pattern": "denies fever",
+        "feature": "fever",
+        "present": false
+      },
+      {
+        "text_pattern": "Murphy sign negative",
+        "feature": "murphy_sign",
+        "present": false
+      },
+      {
+        "text_pattern": "no gallstones on ultrasound",
+        "feature": "ultrasound_gallstones",
+        "present": false
+      },
+      {
+        "text_pattern": "rule out cholecystitis",
+        "feature": "acute_calculus_cholecystitis",
+        "present": "uncertain_hypothesis_not_diagnosis"
+      },
+      {
+        "text_pattern": "history of cholecystectomy",
+        "feature": "acute_calculus_cholecystitis",
+        "present": "historical_or_post_cholecystectomy_context_requires_manual_review"
+      }
+    ]
+  },
+  "source_grounded_exclusions": [
+    {
+      "excluded_claim": "A formal 2-of-3 diagnostic rule exists for cholecystitis in WSES 2020.",
+      "reason": "WSES 2020 explicitly uses an integrated assessment framework and states no single feature is sufficient. (Tokyo Guidelines TG18 do provide an A/B/C three-part rule, but this KB does not encode TG18 directly.)",
+      "replacement": "Use integrated assessment combining history + exam + labs + imaging. Acknowledge TG18 exists as an alternative."
+    },
+    {
+      "excluded_claim": "Murphy sign alone confirms ACC.",
+      "reason": "WSES: useful but not sufficient alone.",
+      "replacement": "Combine with inflammatory markers and imaging."
+    },
+    {
+      "excluded_claim": "Gallstones on ultrasound confirm ACC.",
+      "reason": "Gallstones can be incidental; require inflammatory features.",
+      "replacement": "Combine with wall thickening / pericholecystic fluid / Murphy sign / inflammatory markers."
+    },
+    {
+      "excluded_claim": "Elevated LFTs or bilirubin alone confirm CBDS.",
+      "reason": "WSES strong recommendation: do not use alone (moderate-quality evidence).",
+      "replacement": "Perform LFTs + US; use MRCP/EUS/IOC/LUS for moderate-risk patients."
+    },
+    {
+      "excluded_claim": "Increased CBD diameter alone confirms CBDS.",
+      "reason": "WSES strong recommendation: insufficient alone (high-quality evidence).",
+      "replacement": "Further diagnostic tests required."
+    }
+  ],
+  "source_audit": {
+    "status": "passed_after_strict_source_grounded_audit_with_derived_logic_labeled",
+    "checked_sources": [
+      "WSES_ACC_2020",
+      "STATPEARLS_ACUTE_CHOLECYSTITIS_2025",
+      "TG18_REFERENCE_ONLY"
+    ],
+    "summary": "Verified claim by claim against the WSES 2020 ACC guideline PDF and StatPearls Acute Cholecystitis PDF only. Core WSES diagnostic/CBDS/imaging claims are retained. Unsourced TG18 detail, differential-diagnosis heuristics, temporal rules, and pancreatitis/cholangitis/hepatitis thresholds were narrowed or explicitly labeled as inference/external clinical knowledge where retained.",
+    "cautions": [
+      "This KB is for research LLM diagnostic support only, not clinical care.",
+      "WSES 2020 does not define an n-of-m diagnostic rule for ACC; output labels such as probable_ACC are KB implementation labels.",
+      "TG18 primary source was not available; TG18 details are not encoded and should not be treated as directly source-verified.",
+      "Differential diagnosis names are source-supported by StatPearls, but many distinguishing clues require separate disease-specific references if used as formal rules."
+    ],
+    "page_level_provenance": [
+      {
+        "claim_id": "wses_acc_no_single_feature",
+        "source_id": "WSES_ACC_2020",
+        "source_page": "PDF p.3 / article page 3",
+        "exact_quote": "no feature has sufficient diagnostic power to establish or exclude the diagnosis of ACC",
+        "verification_method": "direct PDF text verification"
+      },
+      {
+        "claim_id": "wses_acc_combined_assessment",
+        "source_id": "WSES_ACC_2020",
+        "source_page": "PDF p.3 / article page 3",
+        "exact_quote": "using a combination of detailed history, complete clinical examination, laboratory tests and imaging investigations",
+        "verification_method": "direct PDF text verification"
+      },
+      {
+        "claim_id": "us_first_choice_imaging",
+        "source_id": "WSES_ACC_2020",
+        "source_page": "PDF p.5 / article page 5",
+        "exact_quote": "abdominal ultrasound (US) as the preferred initial imaging technique",
+        "verification_method": "direct PDF text verification"
+      },
+      {
+        "claim_id": "hida_highest_accuracy",
+        "source_id": "WSES_ACC_2020",
+        "source_page": "PDF p.6 / article page 6",
+        "exact_quote": "HIDA scan has the highest sensitivity and specificity",
+        "verification_method": "direct PDF text verification"
+      },
+      {
+        "claim_id": "cbds_lft_bilirubin_not_alone",
+        "source_id": "WSES_ACC_2020",
+        "source_page": "PDF p.7 / article page 7",
+        "exact_quote": "recommend against the use of elevated LFTs or bilirubin as the only method to identify CBDS",
+        "verification_method": "direct PDF text verification"
+      },
+      {
+        "claim_id": "cbds_risk_stratification",
+        "source_id": "WSES_ACC_2020",
+        "source_page": "PDF p.8 / article page 8",
+        "exact_quote": "bilirubin > 4 mg/dl or enlarged common bile duct diameter at US with concomitant bilirubin level 1.8 to 4 mg/dl",
+        "verification_method": "direct PDF text verification"
+      }
+    ]
+  }
+}

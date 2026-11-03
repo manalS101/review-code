@@ -1,0 +1,1094 @@
+{
+  "clinical_review": {
+    "status": "accepted",
+    "procedure": "Reviewed independently by a medical expert and by a project author. No knowledge base was accepted until every critical item was approved or explicitly flagged for revision. Review was divided by clinical condition.",
+    "medical_expert_specialty": "Cardiology Specialist",
+    "medical_expert_checklist": [
+      "The disease-specific diagnostic framework is clinically appropriate.",
+      "All concepts are correctly classified as diagnostic, supportive, etiologic, severity, complication, or exclusion evidence.",
+      "Every diagnostic rule, criterion, threshold, unit, timing condition, and population restriction is confirmed.",
+      "No unsupported rule was invented, and supportive findings cannot independently confirm the diagnosis.",
+      "The what-does-not-count, contradiction, insufficient-evidence, abstention, and referral rules reflect safe clinical practice.",
+      "Every clinical item is accurately grounded in the cited sources."
+    ],
+    "project_author_checklist": [
+      "All concepts and rules have correct source provenance.",
+      "The JSON structure, concept identifiers, rule references, and value types are valid and consistent.",
+      "Missing evidence remains unknown and cannot accidentally activate a rule.",
+      "The verifier is deterministic and reports the decision, supporting evidence, missing or conflicting evidence, and justification.",
+      "Clear positive, unsupported, incomplete, contradictory, and threshold-boundary cases are tested."
+    ],
+    "revisions_arising_from_review": {
+      "all_knowledge_bases": [
+        "A claim-by-claim audit was introduced. Every diagnostic concept, threshold, and relationship was required to trace to one of the two cited sources. Derived elements, such as language normalization and differential-handling logic, were relabelled as implementation logic rather than guideline facts.",
+        "Each concept was assigned one of four states: present, absent, unknown, or conflicting. Missing documentation remains unknown. Diagnostic, supportive, etiologic, severity, complication, and management evidence are stored separately, so that only explicitly diagnostic evidence can activate the verifier.",
+        "The four knowledge bases keep different decision structures rather than one shared formula: a two-of-three rule for pancreatitis, integrated clinical and imaging assessment for cholecystitis, CT-supported multi-evidence assessment for diverticulitis, and stepwise risk stratification followed by imaging for appendicitis.",
+        "Unsupported or partially supported claims were deleted or rewritten, and explicit cautions were added stating that no official two-of-three rule exists for appendicitis, cholecystitis, or diverticulitis."
+      ],
+      "appendicitis": [
+        "Five PROVENANCE_NOTE placeholders were replaced with page-cited evidence.",
+        "Alvarado, AIR, AAS, and pediatric scores were retained for risk stratification only and cannot independently confirm appendicitis.",
+        "Pediatric thresholds, including CRP at or above 10 mg/L, were linked to the relevant WSES statement and page."
+      ]
+    },
+    "known_limitation": "Each condition carries one clinician's assessment, so criterion-level agreement between clinicians is not available. Specialty-matched review by two independent clinicians per condition, with adjudication of disagreement, precedes clinical use.",
+    "record_of_review": "Supplementary Material, section 4 (expert review and acceptance checklist) and Table S1 (specific improvements introduced during iterative revision)."
+  },
+  "kb_id": "appendicitis_integrated_diagnostic_kb_v1_1_v2_normalized",
+  "schema_version": "2.0",
+  "disease": {
+    "project_label": "appendicitis",
+    "canonical_name": "acute_appendicitis",
+    "scope": "diagnostic and evidence-stratification KB for suspected acute appendicitis in clinical notes, labs, and imaging reports",
+    "intended_use": "diagnostic agent support;"
+  },
+  "sources": [
+    {
+      "source_id": "WSES_APPENDICITIS_2020",
+      "title": "Diagnosis and treatment of acute appendicitis: 2020 update of the WSES Jerusalem guidelines",
+      "file": "WSES_appendicitis_2020.pdf",
+      "role": [
+        "primary_guideline_source",
+        "diagnostic_pathway_authority",
+        "risk_stratification_authority",
+        "imaging_pathway_authority",
+        "management_context"
+      ],
+      "license_or_access": "open access article",
+      "notes": "Use for recommendations, clinical score role, imaging pathway, pediatric/pregnancy cautions, NOM criteria, timing, and complicated appendicitis pathways."
+    },
+    {
+      "source_id": "STATPEARLS_APPENDICITIS_2024",
+      "title": "Appendicitis - StatPearls - NCBI Bookshelf",
+      "file": "Appendicitis - StatPearls - NCBI Bookshelf.pdf",
+      "last_update": "February 12, 2024",
+      "role": [
+        "clinical_presentation_source",
+        "symptom_language_source",
+        "lab_and_imaging_feature_source",
+        "differential_and_complication_context"
+      ],
+      "notes": "Use for text-to-concept mapping of symptoms/signs and common descriptive imaging/lab findings. Do not override WSES diagnostic pathway recommendations."
+    }
+  ],
+  "scientific_guardrails": {
+    "no_fake_n_of_m_rule": true,
+    "rationale": "Unlike pancreatitis, WSES appendicitis does not define a 2-of-3 diagnostic rule. Diagnosis is a tailored, stepwise synthesis of clinical presentation, risk score, labs, and imaging.",
+    "diagnosis_should_not_be_based_on": [
+      "single symptom alone",
+      "single physical sign alone",
+      "Alvarado score alone as a positive confirmatory diagnosis in adults",
+      "clinical scores alone in children",
+      "symptoms and signs alone in pregnancy"
+    ],
+    "must_report_uncertainty_when": [
+      "clinical features are incomplete",
+      "labs are absent or normal but symptoms persist",
+      "risk score cannot be computed",
+      "imaging is needed but not available",
+      "pregnancy/pediatric pathway applies, or elderly/HIV context affects Alvarado-score reliability"
+    ]
+  },
+  "diagnostic_framework": {
+    "framework_type": "tailored_stepwise_risk_stratification",
+    "primary_rule": {
+      "id": "AA_WSES_STEPWISE_DIAGNOSTIC_PATHWAY",
+      "role": "diagnostic_framework",
+      "logic": [
+        "Extract clinical symptoms and signs.",
+        "Request or extract inflammatory markers/labs where available.",
+        "Compute or approximate clinical risk using validated scores when data allow.",
+        "Use clinical scores primarily to exclude low-risk disease and identify intermediate-risk patients needing imaging.",
+        "Use imaging after initial risk stratification when indicated.",
+        "Do not positively confirm adult acute appendicitis using Alvarado score alone.",
+        "Use AIR score or Adult Appendicitis Score as preferred adult clinical predictors when computable.",
+        "Use ultrasound/POCUS first-line where appropriate and operator expertise exists; use CT/MRI depending on patient group and pathway."
+      ],
+      "source": "WSES_APPENDICITIS_2020",
+      "evidence_grade": "multiple recommendations; includes strong recommendations for tailored approach, score use for exclusion, AIR/AAS as predictors, combined clinical+US imaging approach"
+    },
+    "diagnostic_outputs": [
+      "confirmed_or_highly_likely_acute_appendicitis",
+      "intermediate_risk_suspected_appendicitis_needs_imaging_or_observation",
+      "low_risk_appendicitis_unlikely",
+      "possible_complicated_appendicitis",
+      "unsupported_or_alternative_diagnosis_more_likely"
+    ],
+    "minimum_agent_output_fields": [
+      "diagnosis_label",
+      "risk_level",
+      "criteria_or_evidence_present",
+      "evidence_missing",
+      "score_used_if_any",
+      "imaging_support",
+      "complicated_features",
+      "reasoning_trace",
+      "source_grounding",
+      "abstention_reason_if_not_confirmed"
+    ]
+  },
+  "clinical_concepts": {
+    "symptoms": [
+      {
+        "id": "pain_periumbilical_or_diffuse_initial",
+        "display": "initial diffuse or periumbilical abdominal pain",
+        "maps_to": "appendicitis_pain_pattern",
+        "role": "clinical_language_mapping",
+        "source": "STATPEARLS_APPENDICITIS_2024",
+        "diagnostic_weight": "supportive"
+      },
+      {
+        "id": "pain_migrates_to_rlq",
+        "display": "pain migrates/localizes to right lower quadrant",
+        "synonyms": [
+          "migratory RLQ pain",
+          "periumbilical pain later RLQ",
+          "right iliac fossa pain"
+        ],
+        "role": "clinical_language_mapping",
+        "source": "STATPEARLS_APPENDICITIS_2024",
+        "diagnostic_weight": "important_supportive"
+      },
+      {
+        "id": "pain_worse_with_coughing_walking_movement",
+        "display": "pain worsens with coughing, walking, or movement",
+        "role": "clinical_language_mapping",
+        "source": "STATPEARLS_APPENDICITIS_2024",
+        "diagnostic_weight": "supportive"
+      },
+      {
+        "id": "anorexia",
+        "display": "anorexia",
+        "role": "clinical_language_mapping",
+        "source": "STATPEARLS_APPENDICITIS_2024",
+        "diagnostic_weight": "supportive"
+      },
+      {
+        "id": "nausea_or_vomiting",
+        "display": "nausea with or without vomiting",
+        "role": "clinical_language_mapping",
+        "source": "STATPEARLS_APPENDICITIS_2024",
+        "diagnostic_weight": "supportive"
+      },
+      {
+        "id": "diarrhea_malaise_urinary_frequency_urgency",
+        "display": "diarrhea, malaise, urinary frequency, or urgency",
+        "role": "atypical_or_associated_symptom_mapping",
+        "source": "STATPEARLS_APPENDICITIS_2024",
+        "diagnostic_weight": "weak_supportive"
+      },
+      {
+        "id": "fever",
+        "display": "fever",
+        "role": "clinical_language_mapping",
+        "source": "STATPEARLS_APPENDICITIS_2024",
+        "diagnostic_weight": "supportive"
+      }
+    ],
+    "physical_exam": [
+      {
+        "id": "rlq_tenderness",
+        "display": "right lower quadrant tenderness",
+        "synonyms": [
+          "right iliac fossa tenderness",
+          "McBurney point tenderness"
+        ],
+        "role": "clinical_exam_mapping",
+        "source": "STATPEARLS_APPENDICITIS_2024",
+        "diagnostic_weight": "important_supportive"
+      },
+      {
+        "id": "localized_guarding_rlq",
+        "display": "localized guarding in right lower quadrant",
+        "role": "clinical_exam_mapping",
+        "source": "STATPEARLS_APPENDICITIS_2024",
+        "diagnostic_weight": "supportive_for_peritoneal_irritation"
+      },
+      {
+        "id": "rebound_tenderness_mcburney",
+        "display": "rebound tenderness at McBurney point",
+        "role": "clinical_exam_mapping",
+        "source": "STATPEARLS_APPENDICITIS_2024",
+        "diagnostic_weight": "supportive_but_not_specific"
+      },
+      {
+        "id": "dunphy_sign",
+        "display": "increased abdominal pain with coughing or increased intra-abdominal pressure",
+        "role": "clinical_exam_mapping",
+        "source": "STATPEARLS_APPENDICITIS_2024",
+        "diagnostic_weight": "supportive_but_not_diagnostic"
+      },
+      {
+        "id": "rovsing_sign",
+        "display": "right lower quadrant pain elicited by left lower quadrant palpation",
+        "role": "clinical_exam_mapping",
+        "source": "STATPEARLS_APPENDICITIS_2024",
+        "diagnostic_weight": "supportive_but_not_diagnostic"
+      },
+      {
+        "id": "psoas_sign",
+        "display": "right lower quadrant pain with right hip extension or resisted flexion",
+        "role": "clinical_exam_mapping",
+        "source": "STATPEARLS_APPENDICITIS_2024",
+        "diagnostic_weight": "supportive_but_not_diagnostic"
+      }
+    ],
+    "temporal_features": [
+      {
+        "id": "acute_within_24h_common",
+        "display": "presentation often within 24 hours of onset",
+        "role": "temporal_context",
+        "source": "STATPEARLS_APPENDICITIS_2024"
+      },
+      {
+        "id": "symptoms_12_24h_gradual_escalation",
+        "display": "symptoms may progress over 12-24 hours",
+        "role": "temporal_context",
+        "source": "STATPEARLS_APPENDICITIS_2024"
+      },
+      {
+        "id": "complicated_cases_can_persist_over_48h",
+        "display": "complicated appendicitis symptoms may extend beyond 48 hours",
+        "role": "severity_context",
+        "source": "STATPEARLS_APPENDICITIS_2024"
+      }
+    ]
+  },
+  "laboratory_evidence": {
+    "general": [
+      {
+        "id": "wbc_with_differential",
+        "display": "white blood cell count with differential / absolute neutrophil count",
+        "role": "inflammatory_marker",
+        "source": [
+          "WSES_APPENDICITIS_2020",
+          "STATPEARLS_APPENDICITIS_2024"
+        ],
+        "diagnostic_use": "supportive; part of risk stratification; not alone confirmatory"
+      },
+      {
+        "id": "crp",
+        "display": "C-reactive protein",
+        "role": "inflammatory_marker",
+        "source": [
+          "WSES_APPENDICITIS_2020",
+          "STATPEARLS_APPENDICITIS_2024"
+        ],
+        "diagnostic_use": "supportive; useful with WBC and risk scores; not alone confirmatory"
+      }
+    ],
+    "thresholds": [
+      {
+        "id": "wbc_gt_10000_common",
+        "marker": "WBC",
+        "operator": ">",
+        "value": 10000,
+        "unit": "cells/mm3",
+        "meaning": "commonly present in acute appendicitis but cannot confirm/exclude alone",
+        "source": "STATPEARLS_APPENDICITIS_2024"
+      },
+      {
+        "id": "wbc_ge_17000_complicated_association",
+        "marker": "WBC",
+        "operator": ">=",
+        "value": 17000,
+        "unit": "cells/mm3",
+        "meaning": "associated with complicated acute appendicitis",
+        "source": "STATPEARLS_APPENDICITIS_2024",
+        "role": "complication_risk_marker"
+      },
+      {
+        "id": "pediatric_crp_ge_10",
+        "marker": "CRP",
+        "operator": ">=",
+        "value": 10,
+        "unit": "mg/L",
+        "population": "pediatric",
+        "meaning": "strong predictive factor for appendicitis in pediatric patients when used with clinical context",
+        "source": "WSES_APPENDICITIS_2020",
+        "role": "pediatric_predictive_marker"
+      },
+      {
+        "id": "pediatric_leukocytosis_ge_16000",
+        "marker": "WBC",
+        "operator": ">=",
+        "value": 16000,
+        "unit": "as_reported_by_WSES: /mL",
+        "population": "pediatric",
+        "meaning": "strong predictive factor for appendicitis in pediatric patients",
+        "source": "WSES_APPENDICITIS_2020",
+        "role": "pediatric_predictive_marker"
+      }
+    ],
+    "normal_lab_caution": {
+      "statement": "No laboratory value alone can confirm or exclude acute appendicitis; normal WBC plus normal CRP has high negative predictive value. Persistent or progressive right iliac fossa pain after normal investigations should follow the WSES escalation pathway.",
+      "source": [
+        "STATPEARLS_APPENDICITIS_2024",
+        "WSES_APPENDICITIS_2020"
+      ]
+    }
+  },
+  "clinical_scores": {
+    "policy": {
+      "use_for": [
+        "risk_stratification",
+        "exclude_low_risk",
+        "identify_intermediate_risk_needing_imaging"
+      ],
+      "do_not_use_for": [
+        "sole_positive_confirmation_in_adults",
+        "sole_diagnosis_in_children",
+        "sole_diagnosis_in_pregnancy"
+      ],
+      "source": "WSES_APPENDICITIS_2020"
+    },
+    "scores": [
+      {
+        "id": "AIR_score",
+        "display": "Appendicitis Inflammatory Response score",
+        "wSES_position": "one of best performing adult clinical prediction scores; recommended as clinical predictor",
+        "preferred_adult_score": true,
+        "source": "WSES_APPENDICITIS_2020"
+      },
+      {
+        "id": "AAS_score",
+        "display": "Adult Appendicitis Score",
+        "wSES_position": "one of best performing adult clinical prediction scores; recommended as clinical predictor",
+        "preferred_adult_score": true,
+        "source": "WSES_APPENDICITIS_2020"
+      },
+      {
+        "id": "Alvarado_score",
+        "display": "Alvarado score",
+        "wSES_position": "sensitive for exclusion/low-risk identification but not sufficiently specific for positive confirmation in adults",
+        "source": "WSES_APPENDICITIS_2020",
+        "statpearls_components": {
+          "2_points_each": [
+            "right_lower_quadrant_tenderness",
+            "leukocytosis"
+          ],
+          "1_point_each": [
+            "migratory_right_lower_quadrant_pain",
+            "right_lower_quadrant_rebound_tenderness",
+            "fever",
+            "nausea_or_vomiting",
+            "anorexia"
+          ],
+          "max_points": 9,
+          "score_7_or_higher": "significantly associated with acute appendicitis",
+          "source": "STATPEARLS_APPENDICITIS_2024"
+        }
+      },
+      {
+        "id": "Pediatric_Appendicitis_Score",
+        "display": "Pediatric Appendicitis Score",
+        "wSES_position": "useful to exclude appendicitis in children, but diagnosis should not be based on clinical scores alone",
+        "source": "WSES_APPENDICITIS_2020"
+      }
+    ],
+    "high_risk_cutoffs_from_WSES_imaging_pathway": [
+      {
+        "id": "air_high_risk_younger_than_40",
+        "score": "AIR",
+        "range": "9-12",
+        "population": "younger than 40",
+        "implication": "cross-sectional preoperative imaging may be avoided before diagnostic +/- therapeutic laparoscopy",
+        "source": "WSES_APPENDICITIS_2020"
+      },
+      {
+        "id": "alvarado_high_risk_younger_than_40",
+        "score": "Alvarado",
+        "range": "9-10",
+        "population": "younger than 40",
+        "implication": "cross-sectional preoperative imaging may be avoided before diagnostic +/- therapeutic laparoscopy",
+        "source": "WSES_APPENDICITIS_2020"
+      },
+      {
+        "id": "aas_high_risk_younger_than_40",
+        "score": "AAS",
+        "operator": ">=",
+        "value": 16,
+        "population": "younger than 40",
+        "implication": "cross-sectional preoperative imaging may be avoided before diagnostic +/- therapeutic laparoscopy",
+        "source": "WSES_APPENDICITIS_2020"
+      }
+    ]
+  },
+  "imaging_evidence": {
+    "pathway_policy": [
+      {
+        "id": "combined_clinical_us_reduces_ct",
+        "statement": "Routine combination of clinical parameters and ultrasound is recommended to improve diagnostic sensitivity/specificity and reduce CT need.",
+        "source": "WSES_APPENDICITIS_2020"
+      },
+      {
+        "id": "intermediate_risk_imaging",
+        "statement": "Intermediate-risk patients benefit from observation and systematic diagnostic imaging.",
+        "source": "WSES_APPENDICITIS_2020"
+      },
+      {
+        "id": "pocus_first_line_if_indicated",
+        "statement": "POCUS by an experienced operator is recommended as the most appropriate first-line diagnostic imaging tool in adults and children if imaging is indicated.",
+        "source": "WSES_APPENDICITIS_2020"
+      },
+      {
+        "id": "low_dose_ct_after_negative_us_young",
+        "statement": "Contrast-enhanced low-dose CT is preferred over standard-dose CT for adolescents and young adults with suspected appendicitis and negative US findings.",
+        "source": "WSES_APPENDICITIS_2020"
+      },
+      {
+        "id": "children_us_first_line",
+        "statement": "In pediatric patients, US is suggested as first-line imaging; second-line imaging depends on availability/expertise; routine CT as first-line is discouraged.",
+        "source": "WSES_APPENDICITIS_2020"
+      },
+      {
+        "id": "pregnancy_us_then_mri",
+        "statement": "In pregnancy, graded-compression transabdominal US is preferred initially; MRI is suggested after inconclusive US where available.",
+        "source": "WSES_APPENDICITIS_2020"
+      }
+    ],
+    "ct_findings": [
+      {
+        "id": "appendix_outer_diameter_gt_6_to_9_mm",
+        "display": "enlarged appendix outer diameter >6 mm to 8/9 mm",
+        "source": "STATPEARLS_APPENDICITIS_2024",
+        "role": "imaging_feature"
+      },
+      {
+        "id": "appendiceal_wall_thickening_gt_2_to_3_mm",
+        "display": "appendiceal wall thickening >2-3 mm",
+        "source": "STATPEARLS_APPENDICITIS_2024",
+        "role": "imaging_feature"
+      },
+      {
+        "id": "periappendiceal_fat_stranding",
+        "display": "periappendiceal fat stranding",
+        "source": "STATPEARLS_APPENDICITIS_2024",
+        "role": "imaging_feature"
+      },
+      {
+        "id": "appendiceal_wall_enhancement",
+        "display": "enhancement of appendiceal wall",
+        "source": "STATPEARLS_APPENDICITIS_2024",
+        "role": "imaging_feature"
+      },
+      {
+        "id": "appendicolith",
+        "display": "appendicolith",
+        "source": "STATPEARLS_APPENDICITIS_2024",
+        "role": [
+          "imaging_feature",
+          "risk_marker_for_NOM_failure_or_complication_context"
+        ]
+      },
+      {
+        "id": "developing_abscess_fluid_collection",
+        "display": "surrounding fluid collection/abscess with stranding as a complicated/imaging-context feature",
+        "source": "STATPEARLS_APPENDICITIS_2024",
+        "role": "complicated_imaging_feature"
+      }
+    ],
+    "us_findings": [
+      {
+        "id": "us_appendix_diameter_gt_6mm",
+        "display": "appendiceal anteroposterior diameter >6 mm",
+        "source": "STATPEARLS_APPENDICITIS_2024",
+        "role": "imaging_feature"
+      },
+      {
+        "id": "us_appendicolith",
+        "display": "appendicolith on ultrasound",
+        "source": "STATPEARLS_APPENDICITIS_2024",
+        "role": "imaging_feature"
+      },
+      {
+        "id": "us_echogenic_periappendiceal_fat",
+        "display": "increased echogenicity of periappendiceal fat",
+        "source": "STATPEARLS_APPENDICITIS_2024",
+        "role": "imaging_feature"
+      },
+      {
+        "id": "us_diameter_lt_5mm_and_compressibility",
+        "display": "appendiceal diameter <5 mm with compressibility",
+        "source": "STATPEARLS_APPENDICITIS_2024",
+        "role": "negative_or_exclusion_support",
+        "caution": "Use as imaging support only; do not override persistent clinical concern."
+      }
+    ],
+    "mri_findings": [
+      {
+        "id": "mri_luminal_distension_dilation",
+        "display": "appendiceal luminal distension/dilation",
+        "source": "STATPEARLS_APPENDICITIS_2024"
+      },
+      {
+        "id": "mri_wall_thickening",
+        "display": "appendiceal wall thickening",
+        "source": "STATPEARLS_APPENDICITIS_2024"
+      },
+      {
+        "id": "mri_free_periappendiceal_fluid",
+        "display": "free periappendiceal fluid",
+        "source": "STATPEARLS_APPENDICITIS_2024"
+      }
+    ],
+    "normalization_notes": {
+      "ct_positive_synonyms": {
+        "appendiceal_dilation": [
+          "dilated appendix",
+          "enlarged appendix",
+          "appendix diameter >6 mm",
+          "appendix 8 mm",
+          "appendix 9 mm"
+        ],
+        "wall_abnormality": [
+          "wall thickening",
+          "mural thickening",
+          "wall enhancement",
+          "hyperenhancement"
+        ],
+        "periappendiceal_inflammation": [
+          "fat stranding",
+          "periappendiceal inflammatory change",
+          "soft tissue inflammation at appendiceal base"
+        ],
+        "complicated_features": [
+          "abscess",
+          "phlegmon",
+          "fluid collection",
+          "perforation",
+          "diffuse peritonitis"
+        ]
+      },
+      "us_positive_synonyms": {
+        "appendiceal_dilation": [
+          "blind-ending tubular structure",
+          "noncompressible appendix",
+          "appendix diameter >6 mm"
+        ],
+        "periappendiceal_inflammation": [
+          "echogenic periappendiceal fat",
+          "periappendiceal fluid"
+        ],
+        "negative_support": [
+          "compressible appendix",
+          "diameter <5 mm"
+        ]
+      },
+      "caution": "Diameter-only findings are supportive but should be interpreted with other imaging signs and clinical context."
+    }
+  },
+  "complications": {
+    "definition_context": "complicated disease may include perforation, phlegmon, abscess, gangrene, diffuse peritonitis, sepsis, or severe inflammatory spread; use these as complication-context features, not as a standalone diagnostic rule.",
+    "features": [
+      {
+        "id": "appendiceal_perforation",
+        "role": "complicated_feature",
+        "source": "STATPEARLS_APPENDICITIS_2024"
+      },
+      {
+        "id": "periappendiceal_abscess",
+        "role": "complicated_feature",
+        "source": [
+          "WSES_APPENDICITIS_2020",
+          "STATPEARLS_APPENDICITIS_2024"
+        ]
+      },
+      {
+        "id": "phlegmon",
+        "role": "complicated_feature",
+        "source": [
+          "WSES_APPENDICITIS_2020",
+          "STATPEARLS_APPENDICITIS_2024"
+        ]
+      },
+      {
+        "id": "gangrenous_appendicitis",
+        "role": "complicated_feature",
+        "source": "STATPEARLS_APPENDICITIS_2024"
+      },
+      {
+        "id": "diffuse_peritonitis",
+        "role": "complicated_feature",
+        "source": "STATPEARLS_APPENDICITIS_2024"
+      },
+      {
+        "id": "sepsis",
+        "role": "complicated_feature",
+        "source": "STATPEARLS_APPENDICITIS_2024"
+      },
+      {
+        "id": "appendicolith",
+        "role": "risk_marker",
+        "meaning": "appendicolith is important when considering antibiotic-first non-operative management because WSES recommends NOM discussion only in selected uncomplicated cases without appendicolith and notes increased failure risk when appendicolith is present.",
+        "source": "WSES_APPENDICITIS_2020"
+      }
+    ],
+    "management_context_not_diagnostic": [
+      {
+        "id": "nom_uncomplicated_absence_appendicolith",
+        "statement": "Antibiotic-first non-operative management can be discussed as a safe alternative in selected uncomplicated cases without appendicolith, with counseling about failure/recurrence and misdiagnosis risk.",
+        "source": "WSES_APPENDICITIS_2020",
+        "role": "management_context"
+      },
+      {
+        "id": "phlegmon_abscess_nom_or_laparoscopy",
+        "statement": "For complicated appendicitis with periappendicular abscess/phlegmon, non-operative management with antibiotics and drainage where available is reasonable where laparoscopic expertise is not available; laparoscopic treatment is an option in experienced hands.",
+        "source": "WSES_APPENDICITIS_2020",
+        "role": "management_context"
+      }
+    ]
+  },
+  "differential_diagnosis": {
+    "source_policy": "Differential list is included as an LLM guardrail to prevent overcalling appendicitis. Listed alternative diagnoses are source-grounded from StatPearls; distinguishing clues are retained only where explicitly source-supported or labeled as conservative implementation cues.",
+    "items": [
+      {
+        "diagnosis": "gastroenteritis",
+        "overlap": [
+          "abdominal pain",
+          "nausea/vomiting",
+          "diarrhea",
+          "fever"
+        ],
+        "distinguishing_clues": [
+          "listed by StatPearls as a differential diagnosis; no specific distinguishing clue provided in the source text"
+        ],
+        "agent_action": "Consider alternative only as a source-listed differential; do not infer distinguishing features unless present in patient record."
+      },
+      {
+        "diagnosis": "mesenteric_adenitis",
+        "overlap": [
+          "RLQ pain",
+          "fever",
+          "recent viral illness"
+        ],
+        "distinguishing_clues": [
+          "recent viral infection"
+        ],
+        "agent_action": "Consider mesenteric adenitis when recent viral infection is documented and appendicitis core evidence is weak."
+      },
+      {
+        "diagnosis": "Crohn_disease_or_terminal_ileitis",
+        "overlap": [
+          "RLQ pain",
+          "fever",
+          "inflammatory markers"
+        ],
+        "distinguishing_clues": [
+          "known Crohn history",
+          "ileal inflammation"
+        ],
+        "agent_action": "Flag Crohn/terminal ileitis as a mimic when history or ileal inflammation is documented."
+      },
+      {
+        "diagnosis": "renal_colic_or_urinary_pathology",
+        "overlap": [
+          "right-sided abdominal/flank pain",
+          "nausea/vomiting"
+        ],
+        "distinguishing_clues": [
+          "listed by StatPearls as renal colic/kidney stones differential; no specific distinguishing clue provided in the source text"
+        ],
+        "agent_action": "Consider urinary/stone disease only as a source-listed differential unless patient record provides urinary or imaging evidence."
+      },
+      {
+        "diagnosis": "gynecologic_pathology",
+        "overlap": [
+          "lower abdominal/RLQ pain",
+          "nausea",
+          "fever sometimes"
+        ],
+        "distinguishing_clues": [
+          "severe cervical motion tenderness may indicate pelvic inflammatory disease",
+          "ectopic pregnancy, tubo-ovarian abscess, ruptured ovarian cyst, ovarian torsion, salpingitis, mittelschmerz, endometriosis, and round ligament syndrome are listed differentials"
+        ],
+        "agent_action": "In relevant patients, state gynecologic differential and missing pelvic/pregnancy evaluation data as implementation needs, not source-proven appendicitis evidence."
+      },
+      {
+        "diagnosis": "cecal_diverticulitis_or_right_colitis",
+        "overlap": [
+          "right lower abdominal pain",
+          "fever",
+          "leukocytosis"
+        ],
+        "distinguishing_clues": [
+          "complicated cecal diverticulum and right-sided colitis are listed by StatPearls as differentials; no specific distinguishing clue provided in the source text"
+        ],
+        "agent_action": "Consider only as source-listed differential unless patient record/imaging directly supports colonic pathology."
+      }
+    ],
+    "notes": "Differential diagnoses are source-grounded to StatPearls. Only recent viral infection for mesenteric adenitis, severe cervical motion tenderness for PID, and Crohn history/ileal inflammation for Crohn mimic are explicit distinguishing clues found in the StatPearls text. Other workup cues must be treated as implementation logic or patient-record evidence, not direct source claims."
+  },
+  "agent_verifier": {
+    "input_schema": {
+      "symptoms": "list of extracted symptoms with evidence text and negation",
+      "physical_exam": "list of signs with evidence text and negation",
+      "labs": "structured WBC, ANC/neutrophils, CRP, temperature if available",
+      "imaging": "structured US/CT/MRI findings with modality and report text",
+      "population_context": "adult/pediatric/pregnant/elderly/HIV/immunocompromised",
+      "scores": "Alvarado/AIR/AAS/PAS if calculable",
+      "timeline": "hours/days from symptom onset if available"
+    },
+    "decision_algorithm": [
+      {
+        "step": 1,
+        "name": "Clinical suspicion extraction",
+        "logic": "Identify compatible symptoms/signs such as migratory RLQ pain, RLQ tenderness, anorexia, nausea/vomiting, fever, peritoneal signs.",
+        "source": "STATPEARLS_APPENDICITIS_2024"
+      },
+      {
+        "step": 2,
+        "name": "Risk stratification",
+        "logic": "Use AIR/AAS preferentially in adults when available; Alvarado can support exclusion/triage but should not confirm adults alone. In children, scores can help exclude but not diagnose alone.",
+        "source": "WSES_APPENDICITIS_2020"
+      },
+      {
+        "step": 3,
+        "name": "Lab support",
+        "logic": "Use WBC with differential/ANC and CRP as inflammatory support; normal markers reduce likelihood but do not alone rule out when symptoms persist.",
+        "source": [
+          "WSES_APPENDICITIS_2020",
+          "STATPEARLS_APPENDICITIS_2024"
+        ]
+      },
+      {
+        "step": 4,
+        "name": "Imaging pathway",
+        "logic": "Use clinical+US/POCUS where indicated; use systematic imaging for intermediate risk; use low-dose CT after negative US in adolescents/young adults when indicated; use US then MRI in pregnancy; use US first in children.",
+        "source": "WSES_APPENDICITIS_2020"
+      },
+      {
+        "step": 5,
+        "name": "Confirm support level",
+        "logic": "Classify as confirmed/highly likely only when imaging, operative findings, or high-risk clinical context with appropriate pathway support is present. Otherwise output suspected/intermediate/low-risk with missing evidence.",
+        "source": "derived_from_WSES_pathway",
+        "derived": true
+      },
+      {
+        "step": 6,
+        "name": "Complication check",
+        "logic": "Flag abscess, phlegmon, perforation, gangrene, diffuse peritonitis, sepsis, prolonged symptoms, high WBC/CRP, appendicolith, and imaging collections.",
+        "source": [
+          "WSES_APPENDICITIS_2020",
+          "STATPEARLS_APPENDICITIS_2024"
+        ]
+      }
+    ],
+    "abstention_rules": [
+      "If only nausea/vomiting/fever are present without RLQ pain/tenderness or imaging/lab support, do not confirm appendicitis.",
+      "If only Alvarado score is high in an adult and no imaging/clinical pathway support is available, do not state confirmed; state high suspicion.",
+      "If pediatric case has only score data without imaging/lab context, do not diagnose based on score alone.",
+      "If pregnant case has symptoms/signs only, request/require labs and inflammatory markers and follow imaging pathway.",
+      "If imaging is negative but pain is progressive or persistent, do not dismiss; recommend cross-sectional imaging/laparoscopy pathway as applicable."
+    ],
+    "minimum_safe_output_contract": {
+      "required_fields": [
+        "diagnosis_label",
+        "risk_level",
+        "positive_evidence",
+        "negative_or_contradictory_evidence",
+        "missing_evidence",
+        "population_context",
+        "score_used_and_limitations",
+        "imaging_summary",
+        "differential_considered",
+        "confidence_statement",
+        "source_grounding"
+      ],
+      "forbidden_outputs": [
+        "confirmed appendicitis from symptoms alone",
+        "confirmed appendicitis from Alvarado score alone in adults",
+        "pediatric diagnosis from score alone",
+        "pregnancy diagnosis from symptoms/signs only",
+        "ignoring negative imaging or normal labs"
+      ],
+      "recommended_confidence_labels": [
+        "low",
+        "intermediate",
+        "high_suspicion",
+        "imaging_supported",
+        "confirmed_by_documented_imaging_or_operative_pathology"
+      ]
+    }
+  },
+  "evidence_interpretation_layer": {
+    "purpose": "Convert extracted isolated features into conservative diagnostic support patterns for an LLM agent.",
+    "global_rules": [
+      "Do not confirm appendicitis from isolated symptom clusters without RLQ localization, inflammatory support, risk-score context, or imaging.",
+      "Prefer output labels: low_risk, intermediate_risk_needs_imaging_or_observation, high_suspicion, imaging_supported, complicated_features_present.",
+      "When evidence conflicts, preserve both positive and negative evidence and lower confidence rather than forcing a diagnosis.",
+      "Use imaging/operative/pathology evidence as stronger support than symptom-only evidence."
+    ],
+    "patterns": [
+      {
+        "pattern_id": "classic_clinical_appendicitis_pattern",
+        "positive_core_features": [
+          "pain_periumbilical_or_diffuse_initial",
+          "pain_migrates_to_rlq",
+          "rlq_tenderness"
+        ],
+        "supportive_features": [
+          "anorexia",
+          "nausea_or_vomiting",
+          "fever",
+          "localized_guarding_rlq",
+          "rebound_tenderness_mcburney",
+          "wbc_with_differential",
+          "crp"
+        ],
+        "minimum_interpretation": "high_suspicion_if_core_features_present_and_no_strong_contradiction",
+        "confirmation_requirement": "imaging/pathway support or appropriate high-risk surgical pathway support; symptoms alone are not enough for confirmed label.",
+        "source": [
+          "STATPEARLS_APPENDICITIS_2024",
+          "WSES_APPENDICITIS_2020"
+        ]
+      },
+      {
+        "pattern_id": "intermediate_risk_needs_imaging_pattern",
+        "positive_core_features": [
+          "rlq_tenderness_or_rlq_pain",
+          "some_supportive_symptoms_or_inflammatory_markers"
+        ],
+        "typical_missing_items": [
+          "definitive_imaging",
+          "complete_score",
+          "clear_migration_history"
+        ],
+        "interpretation": "intermediate_risk_suspected_appendicitis_needs_imaging_or_observation",
+        "action_for_agent": "Do not overcall; recommend/flag systematic imaging or observation pathway per WSES.",
+        "source": "WSES_APPENDICITIS_2020"
+      },
+      {
+        "pattern_id": "imaging_supported_appendicitis_pattern",
+        "positive_core_features": [
+          "ct_or_us_or_mri_appendiceal_dilation",
+          "appendiceal_wall_thickening_or_enhancement",
+          "periappendiceal_fat_stranding_or_fluid",
+          "appendicolith_optional"
+        ],
+        "interpretation": "confirmed_or_highly_likely_acute_appendicitis_when_clinically_compatible",
+        "caution": "Borderline diameter alone should not be treated as conclusive without other features or clinical compatibility.",
+        "source": "STATPEARLS_APPENDICITIS_2024"
+      },
+      {
+        "pattern_id": "possible_complicated_appendicitis_pattern",
+        "positive_core_features": [
+          "abscess_or_fluid_collection",
+          "phlegmon",
+          "perforation_or_free_air",
+          "diffuse_peritonitis_or_sepsis",
+          "wbc_ge_17000_complicated_association",
+          "prolonged_symptoms_beyond_48h"
+        ],
+        "interpretation": "possible_complicated_appendicitis",
+        "caution": "WBC/CRP elevation alone is association/support, not automatic proof of complicated disease.",
+        "source": [
+          "STATPEARLS_APPENDICITIS_2024",
+          "WSES_APPENDICITIS_2020"
+        ]
+      },
+      {
+        "pattern_id": "low_risk_or_alternative_more_likely_pattern",
+        "positive_core_features": [
+          "no_rlq_localization",
+          "normal_wbc_and_normal_crp",
+          "negative_imaging",
+          "symptoms_resolving",
+          "alternative_specific_features_present"
+        ],
+        "interpretation": "low_risk_appendicitis_unlikely_or_alternative_diagnosis_more_likely",
+        "caution": "Persistent/progressive right iliac fossa pain after normal tests still needs WSES cross-sectional imaging/laparoscopy pathway consideration.",
+        "source": [
+          "WSES_APPENDICITIS_2020",
+          "STATPEARLS_APPENDICITIS_2024"
+        ]
+      }
+    ]
+  },
+  "contradictory_and_uncertainty_layer": {
+    "purpose": "Prevent LLM overdiagnosis by explicitly representing negative, conflicting, or alternative-direction evidence.",
+    "contradictory_or_confidence_lowering_features": [
+      {
+        "id": "absence_of_rlq_pain_or_tenderness",
+        "meaning": "Lowers support for typical appendicitis when repeated exams show no RLQ localization.",
+        "effect": "lower_confidence",
+        "source": "derived_implementation_logic_from_typical_source_pattern_not_direct_quote"
+      },
+      {
+        "id": "dominant_watery_diarrhea_or_viral_syndrome",
+        "meaning": "Consider gastroenteritis or mesenteric adenitis only as source-listed differentials; recent viral infection specifically supports mesenteric adenitis in StatPearls. Dominant watery diarrhea/viral-syndrome wording is an implementation cue, not a direct diagnostic rule.",
+        "effect": "consider_differential",
+        "source": "mixed: STATPEARLS_APPENDICITIS_2024_differential + derived_implementation_cue"
+      },
+      {
+        "id": "flank_pain_hematuria_or_colicky_urinary_pain",
+        "meaning": "Consider renal colic or kidney stones as source-listed differentials when patient-record urinary/stone evidence is present. Specific flank/hematuria/colicky pattern is implementation logic unless documented by the patient record.",
+        "effect": "consider_differential",
+        "source": "mixed: STATPEARLS_APPENDICITIS_2024_differential + patient_record_or_implementation_cue"
+      },
+      {
+        "id": "pelvic_pain_cervical_motion_tenderness_positive_pregnancy_test_or_adnexal_mass",
+        "meaning": "Consider StatPearls-listed gynecologic differentials when relevant; severe cervical motion tenderness may indicate PID. Positive pregnancy test/adnexal-mass wording should be treated as implementation/workup logic unless documented in the patient record.",
+        "effect": "consider_differential",
+        "source": "mixed: STATPEARLS_APPENDICITIS_2024_differential + derived_implementation_cue"
+      },
+      {
+        "id": "known_crohn_or_terminal_ileitis_features",
+        "meaning": "Crohn disease/terminal ileitis can mimic appendicitis.",
+        "effect": "consider_differential",
+        "source": "STATPEARLS_APPENDICITIS_2024"
+      },
+      {
+        "id": "normal_wbc_and_normal_crp",
+        "meaning": "High negative predictive support, but not absolute exclusion when pain persists/progresses.",
+        "effect": "lower_confidence_with_caution",
+        "source": "STATPEARLS_APPENDICITIS_2024"
+      },
+      {
+        "id": "negative_imaging_with_resolving_symptoms",
+        "meaning": "Supports lower-risk pathway when symptoms settle.",
+        "effect": "lower_confidence",
+        "source": "WSES_APPENDICITIS_2020"
+      },
+      {
+        "id": "negative_imaging_but_persistent_or_progressive_pain",
+        "meaning": "Do not dismiss; WSES recommends escalation pathway.",
+        "effect": "uncertainty_or_escalate",
+        "source": "WSES_APPENDICITIS_2020"
+      }
+    ],
+    "required_agent_behavior": [
+      "Report contradictory evidence in the output.",
+      "State what evidence would be needed to move from suspected to imaging_supported or confirmed/highly_likely.",
+      "Never hide normal labs or negative imaging; they must be represented as evidence, not silently ignored."
+    ]
+  },
+  "clinical_nlp_context_layer": {
+    "purpose": "Make the KB safer for extraction from clinical notes by tracking negation, temporality, and experiencer. This is implementation logic for NLP safety, not a medical diagnostic claim from WSES/StatPearls.",
+    "context_fields_required_per_feature": [
+      "present",
+      "negated",
+      "uncertain",
+      "historical",
+      "resolved",
+      "family_history_only",
+      "hypothetical_or_rule_out",
+      "evidence_text",
+      "section",
+      "timestamp_or_relative_time_if_available"
+    ],
+    "temporal_interpretation_rules": [
+      {
+        "id": "migration_sequence_matters",
+        "rule": "Pain beginning diffuse/periumbilical then localizing to RLQ is stronger than nonspecific abdominal pain alone.",
+        "source": "STATPEARLS_APPENDICITIS_2024"
+      },
+      {
+        "id": "early_appendicitis_may_have_subtle_exam",
+        "rule": "A subtle early exam should not automatically rule out appendicitis if symptoms are evolving.",
+        "source": "STATPEARLS_APPENDICITIS_2024"
+      },
+      {
+        "id": "prolonged_symptoms_complicated_context",
+        "rule": "Symptoms extending beyond 48 hours can occur in complicated appendicitis; interpret with imaging and systemic signs.",
+        "source": "STATPEARLS_APPENDICITIS_2024"
+      },
+      {
+        "id": "persistent_pain_after_normal_tests",
+        "rule": "Persistent/progressive right iliac fossa pain after normal investigations should trigger WSES escalation logic.",
+        "source": "WSES_APPENDICITIS_2020"
+      }
+    ],
+    "negation_examples": [
+      {
+        "text_pattern": "denies nausea/vomiting",
+        "feature": "nausea_or_vomiting",
+        "present": false
+      },
+      {
+        "text_pattern": "no RLQ tenderness",
+        "feature": "rlq_tenderness",
+        "present": false
+      },
+      {
+        "text_pattern": "rule out appendicitis",
+        "feature": "acute_appendicitis",
+        "present": "uncertain_hypothesis_not_diagnosis"
+      }
+    ]
+  },
+  "source_grounded_exclusions": [
+    {
+      "excluded_claim": "Appendicitis has an official 2-of-3 diagnostic rule.",
+      "reason": "Not supported by WSES or StatPearls for appendicitis.",
+      "replacement": "Use tailored stepwise risk stratification with clinical scores, labs, and imaging."
+    },
+    {
+      "excluded_claim": "Alvarado score alone confirms adult appendicitis.",
+      "reason": "WSES states it is not sufficiently specific for positive confirmation in adults.",
+      "replacement": "Use Alvarado mainly for exclusion/triage; prefer AIR/AAS for adult prediction."
+    },
+    {
+      "excluded_claim": "Children can be diagnosed by scores alone.",
+      "reason": "WSES suggests against diagnosis based on clinical scores alone in children.",
+      "replacement": "Use scores plus biomarkers and imaging pathway."
+    },
+    {
+      "excluded_claim": "Pregnancy appendicitis can be diagnosed on symptoms/signs only.",
+      "reason": "WSES suggests not making diagnosis in pregnancy on symptoms/signs only.",
+      "replacement": "Require labs/inflammatory markers and US/MRI pathway."
+    }
+  ],
+  "source_audit": {
+    "status": "corrected_after_strict_source_grounded_audit",
+    "checked_sources": [
+      "WSES_APPENDICITIS_2020",
+      "STATPEARLS_APPENDICITIS_2024"
+    ],
+    "summary": "Core WSES diagnostic pathway, score policy, pediatric biomarker thresholds, imaging pathway, and StatPearls clinical/lab/imaging language are broadly aligned after corrections. Differential and NLP safety layers are now explicitly source-list-only or implementation logic where direct source support is absent.",
+    "cautions": [
+      "This KB is for research LLM diagnostic support only, not autonomous clinical diagnosis.",
+      "Appendicitis has no official 2-of-3 diagnostic rule in the WSES and StatPearls sources.",
+      "Alvarado/AIR/AAS/PAS should be used according to WSES score-policy limits, not as universal confirmatory rules.",
+      "Differential diagnoses are source-listed from StatPearls, but most distinguishing clues are not fully specified by the source text and must be treated as implementation cues or patient-record evidence.",
+      "Clinical NLP negation/temporality/experiencer handling is implementation safety logic, not a medical claim from the clinical sources."
+    ],
+    "page_level_provenance": [
+      {
+        "claim_id": "AA_WSES_STEPWISE_DIAGNOSTIC_PATHWAY",
+        "source_id": "WSES_APPENDICITIS_2020",
+        "source_page": "WSES PDF pages 6-7 / diagnostic recommendations table",
+        "exact_quote_or_source_text_summary": "WSES recommends a tailored individualized diagnostic approach, use of clinical scores to exclude AA and identify intermediate-risk patients needing imaging, avoiding adult positive confirmation by Alvarado alone, using AIR/AAS as predictors, and imaging after initial risk stratification.",
+        "verification_method": "Re-verified against the WSES guideline PDF."
+      },
+      {
+        "claim_id": "pediatric_biomarkers",
+        "source_id": "WSES_APPENDICITIS_2020",
+        "source_page": "WSES PDF page 6 / Statement 1.7",
+        "exact_quote_or_source_text_summary": "WSES states WBC count/differential/ANC and CRP are useful in children; CRP ≥10 mg/L and leukocytosis ≥16,000/mL are strong predictive factors.",
+        "verification_method": "Re-verified against the WSES guideline PDF."
+      },
+      {
+        "claim_id": "high_risk_younger_than_40_imaging_cutoffs",
+        "source_id": "WSES_APPENDICITIS_2020",
+        "source_page": "WSES PDF pages 6-7 / Statement-Recommendation 1.10/1.9",
+        "exact_quote_or_source_text_summary": "High-risk patients younger than 40 with AIR 9–12, Alvarado 9–10, and AAS ≥16 may avoid cross-sectional imaging before diagnostic ± therapeutic laparoscopy.",
+        "verification_method": "Re-verified against the WSES guideline PDF."
+      },
+      {
+        "claim_id": "statpearls_symptoms_labs_imaging",
+        "source_id": "STATPEARLS_APPENDICITIS_2024",
+        "source_page": "StatPearls PDF pages 4-5",
+        "exact_quote_or_source_text_summary": "StatPearls supports diffuse/periumbilical pain localizing to RLQ, pain with walking/coughing, anorexia, nausea/vomiting, fever, RLQ exam signs, WBC/CRP caution, WBC >10,000, WBC ≥17,000 association, CT/US/MRI descriptive findings, and Alvarado modified score components.",
+        "verification_method": "Re-verified against the StatPearls PDF."
+      },
+      {
+        "claim_id": "differential_diagnosis_guardrail",
+        "source_id": "STATPEARLS_APPENDICITIS_2024",
+        "source_page": "StatPearls PDF differential diagnosis section",
+        "exact_quote_or_source_text_summary": "StatPearls lists Crohn ileitis, mesenteric adenitis, cecal diverticulum, gynecologic causes, gastroenteritis, right-sided colitis, renal colic/kidney stones, testicular torsion and related mimics; only limited distinguishing clues are explicit.",
+        "verification_method": "Differential list retained; unsupported distinguishing clues pruned or relabeled."
+      }
+    ]
+  }
+}

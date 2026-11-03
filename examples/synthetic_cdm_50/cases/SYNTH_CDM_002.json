@@ -1,0 +1,87 @@
+{
+  "case_id": "SYNTH_CDM_002",
+  "synthetic": true,
+  "history_of_present_illness": "44-year-old woman. Fourteen hours of persistent right upper abdominal pain after a meal, with nausea and vomiting. Prior brief episodes resolved within an hour; this episode has not.",
+  "physical_examination": "Right upper-quadrant tenderness and inspiratory arrest during deep subcostal palpation; no generalized guarding.",
+  "vital_signs": {
+    "temperature_c": 37.4,
+    "heart_rate_per_min": 88,
+    "blood_pressure_mmhg": "116/70",
+    "respiratory_rate_per_min": 18,
+    "spo2_percent_room_air": 97
+  },
+  "laboratory_tests": {
+    "WBC": {
+      "value": 11.8,
+      "unit": "10^9/L",
+      "reference_range": "4.0-11.0"
+    },
+    "Hemoglobin": {
+      "value": 13.1,
+      "unit": "g/dL",
+      "reference_range": "12.0-17.5"
+    },
+    "Platelets": {
+      "value": 220,
+      "unit": "10^9/L",
+      "reference_range": "150-400"
+    },
+    "Sodium": {
+      "value": 136,
+      "unit": "mmol/L",
+      "reference_range": "135-145"
+    },
+    "Potassium": {
+      "value": 3.7,
+      "unit": "mmol/L",
+      "reference_range": "3.5-5.0"
+    },
+    "Creatinine": {
+      "value": 0.8,
+      "unit": "mg/dL",
+      "reference_range": "0.6-1.3"
+    },
+    "CRP": {
+      "value": 45,
+      "unit": "mg/L",
+      "reference_range": "<5"
+    },
+    "Lipase": {
+      "value": 32,
+      "unit": "U/L",
+      "reference_range": "13-60"
+    },
+    "ALT": {
+      "value": 48,
+      "unit": "U/L",
+      "reference_range": "7-45"
+    },
+    "AST": {
+      "value": 43,
+      "unit": "U/L",
+      "reference_range": "10-40"
+    },
+    "Alkaline phosphatase": {
+      "value": 85,
+      "unit": "U/L",
+      "reference_range": "40-130"
+    },
+    "Total bilirubin": {
+      "value": 1.0,
+      "unit": "mg/dL",
+      "reference_range": "0.2-1.2"
+    },
+    "Serum pregnancy test": {
+      "value": "negative",
+      "unit": null,
+      "reference_range": "negative"
+    }
+  },
+  "imaging": [
+    {
+      "region": "Abdomen",
+      "findings": "Ultrasound abdomen: gallstones, impacted gallbladder-neck stone, wall thickness 5 mm, pericholecystic fluid and focal probe tenderness. Common bile duct 4 mm."
+    }
+  ],
+  "input_case": "History of Present Illness:\n44-year-old woman. Fourteen hours of persistent right upper abdominal pain after a meal, with nausea and vomiting. Prior brief episodes resolved within an hour; this episode has not.\n\nPhysical Examination:\nRight upper-quadrant tenderness and inspiratory arrest during deep subcostal palpation; no generalized guarding. Temperature 37.4 C; heart rate 88/min; BP 116/70 mmHg; respiratory rate 18/min; SpO2 97% on room air.\n\nLaboratory Tests:\nWBC: 11.8 10^9/L (reference 4.0-11.0)\nHemoglobin: 13.1 g/dL (reference 12.0-17.5)\nPlatelets: 220 10^9/L (reference 150-400)\nSodium: 136 mmol/L (reference 135-145)\nPotassium: 3.7 mmol/L (reference 3.5-5.0)\nCreatinine: 0.8 mg/dL (reference 0.6-1.3)\nCRP: 45 mg/L (reference <5)\nLipase: 32 U/L (reference 13-60)\nALT: 48 U/L (reference 7-45)\nAST: 43 U/L (reference 10-40)\nAlkaline phosphatase: 85 U/L (reference 40-130)\nTotal bilirubin: 1.0 mg/dL (reference 0.2-1.2)\nSerum pregnancy test: negative (reference negative)\n\nImaging Findings:\nUltrasound abdomen: gallstones, impacted gallbladder-neck stone, wall thickness 5 mm, pericholecystic fluid and focal probe tenderness. Common bile duct 4 mm."
+}

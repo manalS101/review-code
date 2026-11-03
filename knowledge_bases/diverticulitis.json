@@ -1,0 +1,1051 @@
+{
+  "clinical_review": {
+    "status": "accepted",
+    "procedure": "Reviewed independently by a medical expert and by a project author. No knowledge base was accepted until every critical item was approved or explicitly flagged for revision. Review was divided by clinical condition.",
+    "medical_expert_specialty": "Consultant in Internal Medicine",
+    "medical_expert_checklist": [
+      "The disease-specific diagnostic framework is clinically appropriate.",
+      "All concepts are correctly classified as diagnostic, supportive, etiologic, severity, complication, or exclusion evidence.",
+      "Every diagnostic rule, criterion, threshold, unit, timing condition, and population restriction is confirmed.",
+      "No unsupported rule was invented, and supportive findings cannot independently confirm the diagnosis.",
+      "The what-does-not-count, contradiction, insufficient-evidence, abstention, and referral rules reflect safe clinical practice.",
+      "Every clinical item is accurately grounded in the cited sources."
+    ],
+    "project_author_checklist": [
+      "All concepts and rules have correct source provenance.",
+      "The JSON structure, concept identifiers, rule references, and value types are valid and consistent.",
+      "Missing evidence remains unknown and cannot accidentally activate a rule.",
+      "The verifier is deterministic and reports the decision, supporting evidence, missing or conflicting evidence, and justification.",
+      "Clear positive, unsupported, incomplete, contradictory, and threshold-boundary cases are tested."
+    ],
+    "revisions_arising_from_review": {
+      "all_knowledge_bases": [
+        "A claim-by-claim audit was introduced. Every diagnostic concept, threshold, and relationship was required to trace to one of the two cited sources. Derived elements, such as language normalization and differential-handling logic, were relabelled as implementation logic rather than guideline facts.",
+        "Each concept was assigned one of four states: present, absent, unknown, or conflicting. Missing documentation remains unknown. Diagnostic, supportive, etiologic, severity, complication, and management evidence are stored separately, so that only explicitly diagnostic evidence can activate the verifier.",
+        "The four knowledge bases keep different decision structures rather than one shared formula: a two-of-three rule for pancreatitis, integrated clinical and imaging assessment for cholecystitis, CT-supported multi-evidence assessment for diverticulitis, and stepwise risk stratification followed by imaging for appendicitis.",
+        "Unsupported or partially supported claims were deleted or rewritten, and explicit cautions were added stating that no official two-of-three rule exists for appendicitis, cholecystitis, or diverticulitis."
+      ],
+      "diverticulitis": [
+        "The Lameris combination of left-lower-quadrant tenderness, CRP above 50 mg/L, and absence of vomiting was retained only as supportive triage evidence, not as a replacement for CT confirmation.",
+        "The unsupported statement that CRP rises within 24 hours was replaced with the WSES-supported description that CRP may be delayed by 6 to 8 hours and peaks at approximately 48 hours."
+      ]
+    },
+    "known_limitation": "Each condition carries one clinician's assessment, so criterion-level agreement between clinicians is not available. Specialty-matched review by two independent clinicians per condition, with adjudication of disagreement, precedes clinical use.",
+    "record_of_review": "Supplementary Material, section 4 (expert review and acceptance checklist) and Table S1 (specific improvements introduced during iterative revision)."
+  },
+  "kb_id": "diverticulitis_integrated_diagnostic_kb_v2_normalized",
+  "schema_version": "2.0",
+  "disease": {
+    "project_label": "diverticulitis",
+    "canonical_name": "acute_colonic_diverticulitis",
+    "scope": "diagnostic and severity-staging KB for suspected acute left-sided colonic diverticulitis (ALCD) in clinical notes, labs, and imaging reports",
+    "intended_use": "diagnostic-agent "
+  },
+  "sources": [
+    {
+      "source_id": "WSES_2020_diverticulitis",
+      "title": "2020 update of the WSES guidelines for the management of acute colonic diverticulitis in the emergency setting",
+      "doi": "10.1186/s13017-020-00313-4",
+      "role": "primary_guideline_rule_source",
+      "scope_used": [
+        "diagnostic assessment rule",
+        "CT-first imaging recommendation",
+        "WSES CT classification",
+        "CRP severity interpretation",
+        "antibiotic/outpatient/abscess rules",
+        "high-risk groups"
+      ]
+    },
+    {
+      "source_id": "StatPearls_2024_diverticulitis",
+      "title": "Diverticulitis - StatPearls - NCBI Bookshelf",
+      "last_update": "2024-07-25",
+      "role": "clinical_presentation_and_evaluation_source",
+      "scope_used": [
+        "symptom language",
+        "physical exam findings",
+        "typical CT findings",
+        "differential diagnoses",
+        "complications",
+        "admission warning features"
+      ]
+    }
+  ],
+  "scientific_guardrails": {
+    "no_fake_n_of_m_rule": true,
+    "rationale": "WSES 2020 diverticulitis does NOT define a 2-of-3 or similar n-of-m diagnostic rule. WSES suggests assessing suspected ALCD using clinical history + signs + laboratory inflammatory markers + radiological findings, and explicitly suggests against diagnosis based only on clinical examination.",
+    "diagnosis_should_not_be_based_on": [
+      "clinical examination alone",
+      "CRP alone",
+      "single lab finding alone",
+      "LLQ pain alone without imaging or labs",
+      "low CRP alone to exclude very early disease (WSES notes CRP may not have risen early)"
+    ],
+    "must_report_uncertainty_when": [
+      "imaging is unavailable",
+      "inflammatory markers are absent",
+      "CRP is low but symptom onset is very acute, because WSES notes a 6–8 h delay from onset and peak at 48 h",
+      "features overlap with source-listed differentials such as acute appendicitis, mesenteric ischemia, pelvic inflammatory disease, ovarian cyst, ectopic pregnancy, pyelonephritis, IBS/irritable bowel disease, pancreatitis, cholecystitis, or cholangitis"
+    ]
+  },
+  "diagnostic_framework": {
+    "framework_type": "multi_evidence_assessment",
+    "primary_rule": {
+      "id": "WSES_2020_DIVERTICULITIS_MULTI_EVIDENCE",
+      "role": "diagnostic_framework",
+      "logic": [
+        "Suspected ALCD should be assessed using clinical history + signs + laboratory inflammatory markers + radiological findings.",
+        "Diagnosis based only on clinical examination is discouraged.",
+        "Contrast-enhanced CT scan of the abdomen is the first-choice imaging technique in suspected ALCD.",
+        "Ultrasound by an expert operator can be used initially; CT after inconclusive/negative US is a safe stepwise approach.",
+        "Patients with CRP >150 mg/L should always undergo CT.",
+        "The Lameris 3-feature rule (direct tenderness only in the LLQ + CRP >50 mg/L + absence of vomiting) identified a high-probability clinical subgroup in the cited study; for this KB, imaging is still required before assigning a research-grade confirmed label."
+      ],
+      "source": "WSES_2020_diverticulitis",
+      "evidence_grade": "multiple weak-to-strong recommendations; CT first-choice imaging is weak/moderate (2B); against clinical-exam-only diagnosis is weak/very-low (2D)"
+    },
+    "diagnostic_outputs": [
+      "ct_confirmed_diverticulitis_uncomplicated",
+      "ct_confirmed_diverticulitis_complicated",
+      "high_clinical_probability_imaging_pending",
+      "suspected_diverticulitis_needs_imaging",
+      "unsupported_or_alternative_diagnosis_more_likely",
+      "uncertain_insufficient_evidence"
+    ],
+    "minimum_agent_output_fields": [
+      "diagnosis_label",
+      "WSES_CT_stage_if_imaging_available",
+      "criteria_or_evidence_present",
+      "evidence_missing",
+      "lameris_rule_status",
+      "crp_severity_band",
+      "differential_considered",
+      "reasoning_trace",
+      "source_grounding",
+      "abstention_reason_if_not_confirmed"
+    ]
+  },
+  "clinical_concepts": {
+    "symptoms": [
+      {
+        "id": "left_lower_quadrant_pain",
+        "display": "left lower quadrant abdominal pain",
+        "synonyms": [
+          "LLQ pain",
+          "left iliac fossa pain",
+          "lower left abdominal pain"
+        ],
+        "role": "core_clinical_feature",
+        "source": [
+          "WSES_2020_diverticulitis",
+          "StatPearls_2024_diverticulitis"
+        ],
+        "source_page": "WSES page 3",
+        "diagnostic_weight": "important_supportive_required_with_imaging"
+      },
+      {
+        "id": "fever",
+        "display": "fever",
+        "role": "systemic_inflammation_feature",
+        "source": "StatPearls_2024_diverticulitis",
+        "diagnostic_weight": "supportive"
+      },
+      {
+        "id": "change_in_bowel_habits",
+        "display": "change in bowel habits (constipation or diarrhea)",
+        "role": "supportive_symptom",
+        "source": "StatPearls_2024_diverticulitis",
+        "diagnostic_weight": "supportive"
+      },
+      {
+        "id": "nausea_or_vomiting",
+        "display": "nausea or vomiting",
+        "role": "nonspecific_symptom",
+        "source": "StatPearls_2024_diverticulitis",
+        "diagnostic_weight": "supportive_but_not_specific"
+      },
+      {
+        "id": "absence_of_vomiting",
+        "display": "absence of vomiting",
+        "role": "lameris_rule_component",
+        "source": "WSES_2020_diverticulitis",
+        "source_page": "page 3 (Lameris rule)",
+        "diagnostic_weight": "one_of_three_lameris_features"
+      },
+      {
+        "id": "fecaluria_or_pneumaturia",
+        "display": "fecaluria or pneumaturia",
+        "synonyms": [
+          "air in urine",
+          "feces in urine"
+        ],
+        "role": "fistula_red_flag",
+        "source": "StatPearls_2024_diverticulitis",
+        "diagnostic_weight": "red_flag_colovesical_fistula"
+      }
+    ],
+    "physical_exam": [
+      {
+        "id": "llq_tenderness",
+        "display": "left lower quadrant tenderness",
+        "synonyms": [
+          "direct tenderness in left lower quadrant",
+          "LLQ tenderness"
+        ],
+        "role": "core_exam_feature",
+        "source": [
+          "WSES_2020_diverticulitis",
+          "StatPearls_2024_diverticulitis"
+        ],
+        "source_page": "WSES page 3",
+        "diagnostic_weight": "important_supportive"
+      },
+      {
+        "id": "llq_tenderness_only",
+        "display": "direct tenderness ONLY in left lower quadrant (no other quadrant)",
+        "role": "lameris_rule_component",
+        "source": "WSES_2020_diverticulitis",
+        "source_page": "page 3",
+        "exact_quote": "direct tenderness only in the left lower quadrant",
+        "diagnostic_weight": "one_of_three_lameris_features"
+      },
+      {
+        "id": "abdominal_distension",
+        "display": "abdominal distension",
+        "role": "severity_associated",
+        "source": "StatPearls_2024_diverticulitis",
+        "diagnostic_weight": "reported_in_complicated_presentations"
+      },
+      {
+        "id": "peritoneal_signs",
+        "display": "findings consistent with peritonitis",
+        "synonyms": [
+          "diffuse peritonitis",
+          "generalized abdominal tenderness"
+        ],
+        "role": "red_flag_feature",
+        "source": [
+          "StatPearls_2024_diverticulitis",
+          "WSES_2020_diverticulitis"
+        ],
+        "diagnostic_weight": "red_flag_complicated_disease"
+      }
+    ],
+    "temporal_features": [
+      {
+        "id": "acute_onset_within_days",
+        "display": "acute presentation",
+        "role": "temporal_context",
+        "source": "StatPearls_2024_diverticulitis"
+      },
+      {
+        "id": "crp_late_rise_caution",
+        "display": "CRP may not have risen yet in very acute-onset disease; WSES notes a 6–8 h delay from onset and peak at 48 h",
+        "role": "temporal_caution",
+        "source": "WSES_2020_diverticulitis",
+        "source_page": "page 3-4"
+      }
+    ]
+  },
+  "laboratory_evidence": {
+    "general": [
+      {
+        "id": "crp",
+        "display": "C-reactive protein",
+        "role": "inflammatory_marker_and_severity_predictor",
+        "source": "WSES_2020_diverticulitis",
+        "source_page": "page 3-4",
+        "diagnostic_use": "supportive; also severity stratification; not alone confirmatory"
+      },
+      {
+        "id": "wbc",
+        "display": "white blood cell count",
+        "role": "inflammatory_marker",
+        "source": [
+          "WSES_2020_diverticulitis",
+          "StatPearls_2024_diverticulitis"
+        ],
+        "diagnostic_use": "supportive inflammatory marker; WBC >12,000 cells/mm³ is one SIRS/admission index in StatPearls"
+      }
+    ],
+    "thresholds": [
+      {
+        "id": "crp_gt_50_lameris",
+        "marker": "CRP",
+        "operator": ">",
+        "value": 50,
+        "unit": "mg/L",
+        "meaning": "One of three Lameris-rule features (with LLQ-only tenderness and absence of vomiting); supports high clinical probability of ALCD but does not replace imaging.",
+        "role": "clinical_decision_rule_component",
+        "source": "WSES_2020_diverticulitis",
+        "source_page": "page 3",
+        "exact_quote": "(1) direct tenderness only in the left lower quadrant, (2) CRP > 50 mg/l, and (3) absence of vomiting"
+      },
+      {
+        "id": "crp_gt_150_complicated",
+        "marker": "CRP",
+        "operator": ">",
+        "value": 150,
+        "unit": "mg/L",
+        "meaning": "Independent risk factor for acute complicated diverticulitis; WSES recommends patients with CRP higher than 150 mg/L always undergo CT examination.",
+        "role": "severity_triage_threshold",
+        "source": "WSES_2020_diverticulitis",
+        "source_page": "page 4",
+        "exact_quote": "a CRP value over 150 mg/l and old age were independent risk factors for acute complicated diverticulitis"
+      },
+      {
+        "id": "crp_approx_175_discrimination",
+        "marker": "CRP",
+        "operator": "~",
+        "value": 175,
+        "unit": "mg/L",
+        "meaning": "Optimal threshold reported in WSES-cited studies discriminating severe/complicated from mild/uncomplicated disease (PPV 36%, NPV 92%, sensitivity 61%, specificity 82%); not a standalone diagnostic criterion.",
+        "role": "severity_prediction_threshold",
+        "source": "WSES_2020_diverticulitis",
+        "source_page": "page 4",
+        "exact_quote": "The optimal threshold was reached at 175 mg/l with a positive predictive value of 36%, negative predictive value of 92%, sensitivity of 61%, and specificity of 82%"
+      },
+      {
+        "id": "wbc_sirs_threshold",
+        "marker": "WBC",
+        "operator": ">",
+        "value": 12000,
+        "unit": "cells/mm³",
+        "meaning": "One of the systemic inflammatory response/admission indexes listed by StatPearls; not a diverticulitis-specific diagnostic threshold.",
+        "role": "sirs_criterion",
+        "source": "StatPearls_2024_diverticulitis"
+      }
+    ],
+    "normal_lab_caution": {
+      "statement": "Do not rule out diverticulitis solely because CRP is low in very acute-onset disease; WSES notes a 6–8 h delay from onset and CRP peak at 48 h.",
+      "source": "WSES_2020_diverticulitis"
+    }
+  },
+  "imaging_evidence": {
+    "pathway_policy": [
+      {
+        "id": "cect_first_choice",
+        "statement": "In patients with suspected ALCD, contrast-enhanced CT scan of the abdomen is the imaging technique of first choice.",
+        "source": "WSES_2020_diverticulitis",
+        "source_page": "page 4",
+        "exact_quote": "In patients with suspected ALCD, we suggest contrast-enhanced CT scan of the abdomen ... as the imaging technique of first choice",
+        "evidence_grade": "weak recommendation, moderate-quality evidence, 2B"
+      },
+      {
+        "id": "us_initial_by_expert_then_ct",
+        "statement": "US may be used in the initial evaluation of patients with suspected ALCD when performed by an expert operator; CT after inconclusive or negative US is a safe approach.",
+        "source": "WSES_2020_diverticulitis",
+        "source_page": "page 4",
+        "evidence_grade": "weak recommendation, moderate-quality evidence, 2B"
+      },
+      {
+        "id": "crp_gt_150_always_ct",
+        "statement": "Patients with CRP higher than 150 mg/L should always undergo CT examination.",
+        "source": "WSES_2020_diverticulitis",
+        "source_page": "page 4"
+      },
+      {
+        "id": "assess_renal_function_before_iv_contrast",
+        "statement": "Assess renal function before IV contrast.",
+        "source": "StatPearls_2024_diverticulitis"
+      }
+    ],
+    "ct_findings": [
+      {
+        "id": "diverticula_with_wall_thickening",
+        "display": "colonic diverticula with wall thickening",
+        "role": "core_imaging_finding",
+        "source": [
+          "WSES_2020_diverticulitis",
+          "StatPearls_2024_diverticulitis"
+        ],
+        "diagnostic_weight": "satisfies_imaging_criterion_with_clinical_context"
+      },
+      {
+        "id": "pericolic_fat_stranding",
+        "display": "pericolic fat stranding / increased pericolic fat density",
+        "role": "core_imaging_finding",
+        "source": [
+          "WSES_2020_diverticulitis",
+          "StatPearls_2024_diverticulitis"
+        ],
+        "diagnostic_weight": "satisfies_imaging_criterion_with_clinical_context"
+      },
+      {
+        "id": "phlegmon",
+        "display": "phlegmon",
+        "role": "complicated_imaging_feature",
+        "source": "WSES_2020_diverticulitis",
+        "diagnostic_weight": "complicated_disease"
+      },
+      {
+        "id": "pericolic_abscess",
+        "display": "pericolic abscess",
+        "role": "complicated_imaging_feature",
+        "source": [
+          "WSES_2020_diverticulitis",
+          "StatPearls_2024_diverticulitis"
+        ],
+        "diagnostic_weight": "complicated_disease_stage_1B_or_2A"
+      },
+      {
+        "id": "extraluminal_gas",
+        "display": "extraluminal gas / pericolic air bubbles / distant free gas",
+        "role": "complicated_imaging_feature",
+        "source": "WSES_2020_diverticulitis",
+        "diagnostic_weight": "complicated_disease"
+      },
+      {
+        "id": "intraabdominal_free_fluid",
+        "display": "intra-abdominal free fluid",
+        "role": "complicated_imaging_feature",
+        "source": "WSES_2020_diverticulitis",
+        "diagnostic_weight": "complicated_disease"
+      },
+      {
+        "id": "fistula",
+        "display": "fistula (colovesical, colovaginal, coloenteric)",
+        "role": "complicated_imaging_feature",
+        "source": "StatPearls_2024_diverticulitis",
+        "diagnostic_weight": "complicated_disease"
+      }
+    ],
+    "us_findings": [
+      {
+        "id": "us_thickened_colonic_wall_with_diverticula",
+        "display": "US may be used initially by an expert operator in suspected ALCD",
+        "role": "initial_imaging_option_expert_operator",
+        "source": "WSES_2020_diverticulitis",
+        "caution": "US summary sensitivity/specificity 90%/90% vs CT 95%/96%; US is operator-dependent and has limitations in obese patients, free gas, and deeply located abscesses."
+      }
+    ],
+    "normalization_notes": {
+      "uncomplicated_findings": [
+        "diverticula",
+        "wall thickening",
+        "pericolic fat stranding without abscess"
+      ],
+      "complicated_findings": [
+        "pericolic air bubbles",
+        "distant gas >5 cm",
+        "abscess (any size)",
+        "diffuse free fluid",
+        "free air with diffuse fluid",
+        "fistula (StatPearls complication/imaging sign; not part of WSES CT stage 0–4 definitions)"
+      ],
+      "caution": "Stage assignment requires CT — see WSES CT-guided classification."
+    }
+  },
+  "severity_assessment": {
+    "primary_classification": "WSES CT-guided classification (2015 WSES Acute Diverticulitis Working Group)",
+    "source": "WSES_2020_diverticulitis",
+    "source_page": "WSES 2020 page 3",
+    "classification_label": "Sartelli/WSES 2015 CT-guided classification of ALCD",
+    "stages": [
+      {
+        "stage": "0",
+        "category": "uncomplicated",
+        "criteria": "Diverticula, thickening of the wall, increased density of the pericolic fat",
+        "agent_role": "uncomplicated_diverticulitis",
+        "source_page": "page 3",
+        "exact_quote": "0 Uncomplicated diverticulitis. Diverticula, thickening of the wall, increased density of the pericolic fat"
+      },
+      {
+        "stage": "1A",
+        "category": "complicated",
+        "criteria": "Pericolic air bubbles or small amount of pericolic fluid without abscess (within 5 cm from inflamed bowel segment)",
+        "agent_role": "localized_complicated_diverticulitis",
+        "source_page": "page 3",
+        "exact_quote": "1A Pericolic air bubbles or small amount of pericolic fluid without abscess (within 5 cm from inflammed bowel segment)"
+      },
+      {
+        "stage": "1B",
+        "category": "complicated",
+        "criteria": "Abscess ≤ 4 cm",
+        "agent_role": "small_abscess_complicated_diverticulitis",
+        "source_page": "page 3",
+        "exact_quote": "1B Abscess ≤ 4 cm"
+      },
+      {
+        "stage": "2A",
+        "category": "complicated",
+        "criteria": "Abscess > 4 cm",
+        "agent_role": "large_abscess_complicated_diverticulitis",
+        "source_page": "page 3",
+        "exact_quote": "2A Abscess > 4 cm"
+      },
+      {
+        "stage": "2B",
+        "category": "complicated",
+        "criteria": "Distant gas (> 5 cm from inflamed bowel segment)",
+        "agent_role": "distant_gas_complicated_diverticulitis",
+        "source_page": "page 3",
+        "exact_quote": "2B Distant gas (> 5 cm from inflammed bowel segment)"
+      },
+      {
+        "stage": "3",
+        "category": "complicated",
+        "criteria": "Diffuse fluid without distant free gas",
+        "agent_role": "diffuse_fluid_complicated_diverticulitis",
+        "source_page": "page 3",
+        "exact_quote": "3 Diffuse fluid without distant free gas"
+      },
+      {
+        "stage": "4",
+        "category": "complicated",
+        "criteria": "Diffuse fluid with distant free gas",
+        "agent_role": "generalized_peritonitis_complicated_diverticulitis",
+        "source_page": "page 3",
+        "exact_quote": "4 Diffuse fluid with distant free gas"
+      }
+    ],
+    "note_on_typo_in_source": "The WSES 2020 PDF contains the spelling \"inflammed\" rather than \"inflamed\" in stage 1A and 2B descriptions; this KB preserves the source quote verbatim in exact_quote fields and uses the standard spelling \"inflamed\" elsewhere.",
+    "note_on_complementary_classifications": "Hinchey, modified Hinchey (Kaiser 2005), Neff, Mora Lopez classifications also exist; WSES 2020 does not recommend any one classification as superior. This KB defaults to WSES CT-guided classification for research-grade structured output."
+  },
+  "complications": {
+    "features": [
+      {
+        "id": "abscess",
+        "role": "complicated_diverticulitis",
+        "source": [
+          "WSES_2020_diverticulitis",
+          "StatPearls_2024_diverticulitis"
+        ]
+      },
+      {
+        "id": "fistula",
+        "role": "complicated_diverticulitis",
+        "source": "StatPearls_2024_diverticulitis"
+      },
+      {
+        "id": "perforation_with_diffuse_peritonitis",
+        "role": "complicated_diverticulitis_stage_3_or_4",
+        "source": "WSES_2020_diverticulitis"
+      },
+      {
+        "id": "bowel_obstruction",
+        "role": "complication",
+        "source": "StatPearls_2024_diverticulitis"
+      },
+      {
+        "id": "sepsis",
+        "role": "systemic_complication",
+        "source": [
+          "WSES_2020_diverticulitis",
+          "StatPearls_2024_diverticulitis"
+        ]
+      }
+    ]
+  },
+  "differential_diagnosis": {
+    "source_policy": "Differential guardrails are restricted to differential diagnoses explicitly listed in the StatPearls text or directly discussed in WSES; detailed distinguishing clues are treated as implementation prompts only when source-grounded.",
+    "items": [
+      {
+        "diagnosis": "acute_appendicitis",
+        "overlap": [
+          "abdominal/lower abdominal pain; right-sided diverticulitis may present similarly to appendicitis"
+        ],
+        "distinguishing_clues": [
+          "site of diverticulitis affects presentation; imaging/clinical evaluation needed"
+        ],
+        "agent_action": "Consider because StatPearls explicitly lists acute appendicitis and notes right-colon diverticulitis may present similarly.",
+        "source": "StatPearls_2024_diverticulitis"
+      },
+      {
+        "diagnosis": "mesenteric_ischemia",
+        "overlap": [
+          "abdominal pain"
+        ],
+        "distinguishing_clues": [
+          "not specified in the source text"
+        ],
+        "agent_action": "Consider as a source-listed differential; do not invent additional discriminators unless present in case evidence.",
+        "source": "StatPearls_2024_diverticulitis"
+      },
+      {
+        "diagnosis": "pelvic_inflammatory_disease_or_ovarian_cyst_or_ectopic_pregnancy",
+        "overlap": [
+          "lower abdominal/pelvic pain may overlap"
+        ],
+        "distinguishing_clues": [
+          "pregnancy test in females of childbearing age is explicitly recommended to rule out ectopic pregnancy"
+        ],
+        "agent_action": "Consider source-listed gynecologic differentials; use pregnancy test context when relevant.",
+        "source": "StatPearls_2024_diverticulitis"
+      },
+      {
+        "diagnosis": "acute_pyelonephritis",
+        "overlap": [
+          "abdominal/flank/urinary presentation may overlap"
+        ],
+        "distinguishing_clues": [
+          "not specified in the source text"
+        ],
+        "agent_action": "Consider as a source-listed differential; do not overcall diverticulitis when urinary evidence dominates.",
+        "source": "StatPearls_2024_diverticulitis"
+      },
+      {
+        "diagnosis": "irritable_bowel_syndrome_or_irritable_bowel_disease",
+        "overlap": [
+          "change in bowel habits and abdominal pain"
+        ],
+        "distinguishing_clues": [
+          "StatPearls notes diverticulitis presentation may be confused with IBS; it also lists irritable bowel disease/syndrome in the differential list."
+        ],
+        "agent_action": "Consider when bowel-habit symptoms dominate without imaging/lab support for diverticulitis.",
+        "source": "StatPearls_2024_diverticulitis"
+      },
+      {
+        "diagnosis": "acute_gastritis_pancreatitis_cholecystitis_or_cholangitis",
+        "overlap": [
+          "abdominal pain; transverse colon diverticulitis may appear as upper-abdominal disorders"
+        ],
+        "distinguishing_clues": [
+          "site-dependent presentation noted by StatPearls; no additional discriminators encoded."
+        ],
+        "agent_action": "Consider as source-listed differentials, especially when pain localization is not LLQ.",
+        "source": "StatPearls_2024_diverticulitis"
+      },
+      {
+        "diagnosis": "colorectal_cancer_after_complicated_diverticulitis_or_abscess",
+        "overlap": [
+          "may be a mimic/concern after complicated presentation"
+        ],
+        "distinguishing_clues": [
+          "WSES discusses risk of malignancy after CT-proven diverticulitis and notes abscess can mimic malignancy."
+        ],
+        "agent_action": "Use only as follow-up/alternative concern where supported; do not infer cancer from LLQ pain alone.",
+        "source": "WSES_2020_diverticulitis"
+      }
+    ],
+    "notes": "Note: WSES 2020 covers left-sided colonic diverticulitis. Right-sided diverticulitis can mimic appendicitis and is more common in Asian populations."
+  },
+  "agent_verifier": {
+    "input_schema": {
+      "symptoms": "list of extracted symptoms with evidence text and negation",
+      "physical_exam": "list of signs with evidence text and negation",
+      "labs": "structured WBC, CRP, temperature if available",
+      "imaging": "structured CT/US findings with modality and report text",
+      "population_context": "age, comorbidities, immunosuppression",
+      "timeline": "hours/days from symptom onset if available"
+    },
+    "decision_algorithm": [
+      {
+        "step": 1,
+        "name": "Clinical extraction",
+        "logic": "Extract LLQ pain/tenderness, fever, bowel habit change, vomiting status, peritoneal signs.",
+        "source": [
+          "WSES_2020_diverticulitis",
+          "StatPearls_2024_diverticulitis"
+        ]
+      },
+      {
+        "step": 2,
+        "name": "Lameris rule check",
+        "logic": "If LLQ-only tenderness + CRP >50 + absence of vomiting are all true, flag as high clinical probability per WSES.",
+        "source": "WSES_2020_diverticulitis"
+      },
+      {
+        "step": 3,
+        "name": "CRP-driven imaging triage",
+        "logic": "If CRP >150, mark mandatory CT per WSES.",
+        "source": "WSES_2020_diverticulitis"
+      },
+      {
+        "step": 4,
+        "name": "Apply CT findings to WSES classification",
+        "logic": "When CT is available, map WSES-classifiable findings to stage 0, 1A, 1B, 2A, 2B, 3, or 4; keep non-WSES complications such as fistula separate from WSES stage assignment.",
+        "source": "WSES_2020_diverticulitis"
+      },
+      {
+        "step": 5,
+        "name": "Confirm or defer",
+        "logic": "Confirm only when imaging supports diverticulitis with consistent clinical context; otherwise label suspected/needs_imaging.",
+        "source": "WSES_2020_diverticulitis"
+      },
+      {
+        "step": 6,
+        "name": "Complication & red flag check",
+        "logic": "Flag abscess, fistula, peritonitis, sepsis, free air.",
+        "source": [
+          "WSES_2020_diverticulitis",
+          "StatPearls_2024_diverticulitis"
+        ]
+      }
+    ],
+    "abstention_rules": [
+      "If only LLQ pain is documented without imaging or labs, do NOT confirm — label suspected_diverticulitis_needs_imaging.",
+      "If Lameris rule is fully met but imaging is absent, label high_clinical_probability_imaging_pending — do NOT label confirmed for research-grade output.",
+      "If CRP is low in very acute-onset disease, do NOT exclude diverticulitis based on CRP alone because WSES notes delayed CRP rise and peak at 48 h.",
+      "If imaging shows WSES-classifiable complicated findings (pericolic air/fluid, abscess, distant gas, diffuse fluid with/without distant free gas), assign the appropriate WSES CT stage; if imaging shows fistula, mark complicated disease but do not force it into a WSES 0–4 stage.",
+      "Do NOT invent a 2-of-3 diagnostic rule for diverticulitis — WSES does not provide one."
+    ],
+    "minimum_safe_output_contract": {
+      "required_fields": [
+        "diagnosis_label",
+        "WSES_CT_stage_if_imaging_available",
+        "positive_evidence",
+        "negative_or_contradictory_evidence",
+        "missing_evidence",
+        "lameris_rule_status",
+        "crp_severity_band",
+        "differential_considered",
+        "confidence_statement",
+        "source_grounding"
+      ],
+      "forbidden_outputs": [
+        "confirmed diverticulitis from clinical exam alone",
+        "confirmed diverticulitis from CRP alone",
+        "exclusion of diverticulitis based only on low CRP in very early presentation",
+        "invented 2-of-3 diagnostic rule for diverticulitis"
+      ],
+      "recommended_confidence_labels": [
+        "low",
+        "intermediate",
+        "high_clinical_probability",
+        "imaging_confirmed",
+        "imaging_confirmed_with_stage"
+      ]
+    }
+  },
+  "evidence_interpretation_layer": {
+    "purpose": "Convert extracted features into conservative diagnostic support patterns for the LLM agent.",
+    "global_rules": [
+      "For this KB, do not assign a research-grade confirmed diverticulitis label without imaging support; WSES discourages diagnosis based only on clinical examination and recommends complete assessment including radiological findings.",
+      "Map CT findings to WSES CT-guided classification (0, 1A, 1B, 2A, 2B, 3, 4) when available.",
+      "CRP thresholds have different source-grounded meanings: >50 mg/L is part of the Lameris rule; >150 mg/L is associated with complicated disease risk and CT recommendation; 175 mg/L is an optimal threshold reported in a cited study for discriminating complicated vs uncomplicated disease.",
+      "When evidence conflicts, preserve both directions and lower confidence."
+    ],
+    "patterns": [
+      {
+        "pattern_id": "classic_clinical_diverticulitis_pattern",
+        "positive_core_features": [
+          "left_lower_quadrant_pain",
+          "llq_tenderness"
+        ],
+        "supportive_features": [
+          "fever",
+          "change_in_bowel_habits",
+          "crp_gt_50_lameris",
+          "wbc_elevated"
+        ],
+        "interpretation": "suspected_diverticulitis_needs_imaging",
+        "confirmation_requirement": "CT imaging support required for research-grade confirmed label.",
+        "source": [
+          "WSES_2020_diverticulitis",
+          "StatPearls_2024_diverticulitis"
+        ]
+      },
+      {
+        "pattern_id": "lameris_high_probability_pattern",
+        "positive_core_features": [
+          "llq_tenderness_only",
+          "crp_gt_50_lameris",
+          "absence_of_vomiting"
+        ],
+        "interpretation": "high_clinical_probability_imaging_pending",
+        "confirmation_requirement": "Implementation policy: even with all 3 Lameris features, this KB requires imaging before a research-grade confirmed label because WSES recommends complete assessment including radiological findings.",
+        "caution": "In the original Lameris study, 29 of 30 patients with all 3 features had ALCD — but 1 did not. Research-grade label still benefits from imaging.",
+        "source": "WSES_2020_diverticulitis"
+      },
+      {
+        "pattern_id": "ct_confirmed_uncomplicated_stage0",
+        "positive_core_features": [
+          "diverticula_with_wall_thickening",
+          "pericolic_fat_stranding"
+        ],
+        "typical_missing_items": [
+          "abscess",
+          "extraluminal_gas",
+          "free_fluid"
+        ],
+        "interpretation": "ct_confirmed_diverticulitis_uncomplicated_stage_0",
+        "source": "WSES_2020_diverticulitis"
+      },
+      {
+        "pattern_id": "ct_confirmed_complicated_pattern",
+        "positive_core_features": [
+          "any_of: pericolic_air_bubbles, abscess, distant_gas, diffuse_free_fluid"
+        ],
+        "interpretation": "ct_confirmed_diverticulitis_complicated",
+        "action_for_agent": "Assign specific WSES stage based on dominant feature: 1A (air bubbles/small fluid within 5cm), 1B (abscess ≤4cm), 2A (abscess >4cm), 2B (distant gas >5cm), 3 (diffuse fluid no gas), 4 (diffuse fluid with gas).",
+        "source": "WSES_2020_diverticulitis"
+      },
+      {
+        "pattern_id": "severe_disease_crp_pattern",
+        "positive_core_features": [
+          "crp_gt_150_complicated"
+        ],
+        "interpretation": "mandatory_ct_per_wses",
+        "action_for_agent": "Flag CT requirement/recommendation per WSES for CRP higher than 150 mg/L.",
+        "source": "WSES_2020_diverticulitis"
+      },
+      {
+        "pattern_id": "red_flag_peritonitis_pattern",
+        "positive_core_features": [
+          "peritoneal_signs"
+        ],
+        "supportive_features": [
+          "fever",
+          "tachycardia",
+          "sepsis_features"
+        ],
+        "interpretation": "possible_complicated_diverticulitis_or_perforation",
+        "action_for_agent": "Flag possible complicated disease/peritonitis context and preserve urgency; CT/staging still depends on imaging findings when available.",
+        "source": [
+          "WSES_2020_diverticulitis",
+          "StatPearls_2024_diverticulitis"
+        ]
+      },
+      {
+        "pattern_id": "alternative_more_likely_pattern",
+        "positive_core_features": [
+          "no_source_supported_ALCD_clinical_pattern",
+          "absence_of_imaging_findings_when_imaging_performed"
+        ],
+        "typical_missing_items": [
+          "ct_findings"
+        ],
+        "interpretation": "unsupported_or_alternative_diagnosis_more_likely",
+        "source": "reasonable_inference_from_WSES_2020_complete_assessment_framework"
+      }
+    ]
+  },
+  "contradictory_and_uncertainty_layer": {
+    "purpose": "Prevent LLM overdiagnosis by representing negative, conflicting, or alternative-direction evidence.",
+    "contradictory_or_confidence_lowering_features": [
+      {
+        "id": "absence_of_llq_pain_or_tenderness",
+        "meaning": "Lowers support for typical ALCD.",
+        "effect": "lower_confidence",
+        "source": "reasonable_inference_from_WSES_and_StatPearls_typical_presentation"
+      },
+      {
+        "id": "right_sided_pain_dominant",
+        "meaning": "Right-colon diverticulitis may present similarly to acute appendicitis; right-sided diverticulitis has different epidemiology.",
+        "effect": "consider_differential",
+        "source": "StatPearls_2024_diverticulitis"
+      },
+      {
+        "id": "source_listed_bowel_differential_pattern",
+        "meaning": "Consider source-listed bowel differentials such as irritable bowel syndrome/irritable bowel disease or mesenteric ischemia when case evidence does not support ALCD.",
+        "effect": "consider_differential",
+        "source": "StatPearls_2024_diverticulitis"
+      },
+      {
+        "id": "source_listed_gynecologic_differential_pattern",
+        "meaning": "Consider source-listed gynecologic differentials such as pelvic inflammatory disease, ovarian cyst, or ectopic pregnancy; pregnancy test is recommended in females of childbearing age with abdominal pain.",
+        "effect": "consider_differential",
+        "source": "StatPearls_2024_diverticulitis"
+      },
+      {
+        "id": "low_crp_in_very_early_presentation",
+        "meaning": "Do not rule out diverticulitis only because CRP is low in very acute-onset disease; WSES notes delayed CRP rise and peak at 48 h.",
+        "effect": "lower_confidence_with_caution",
+        "source": "WSES_2020_diverticulitis"
+      },
+      {
+        "id": "imaging_shows_only_diverticulosis_no_inflammation",
+        "meaning": "Diverticula without wall thickening or stranding do not support acute diverticulitis.",
+        "effect": "lower_confidence",
+        "source": "WSES_2020_diverticulitis"
+      },
+      {
+        "id": "mass_or_chronic_features_on_imaging",
+        "meaning": "Consider malignancy mainly as a follow-up/alternative concern in source-supported contexts such as complicated diverticulitis or abscess; WSES discusses malignancy risk after CT-proven diverticulitis.",
+        "effect": "consider_differential",
+        "source": "StatPearls_2024_diverticulitis"
+      }
+    ],
+    "required_agent_behavior": [
+      "Report contradictory or alternative-direction evidence in the output.",
+      "State what evidence would move the case from suspected to imaging_confirmed.",
+      "Never silently drop normal labs or negative imaging.",
+      "Always assign a WSES CT stage when CT findings are available."
+    ]
+  },
+  "clinical_nlp_context_layer": {
+    "purpose": "Make extraction safer by tracking negation, temporality, and experiencer per feature.",
+    "context_fields_required_per_feature": [
+      "present",
+      "negated",
+      "uncertain",
+      "historical",
+      "resolved",
+      "family_history_only",
+      "hypothetical_or_rule_out",
+      "evidence_text",
+      "section",
+      "timestamp_or_relative_time_if_available"
+    ],
+    "temporal_interpretation_rules": [
+      {
+        "id": "crp_peak_around_48h",
+        "rule": "CRP has a delay of 6–8 h from onset and reaches peak at 48 h; low CRP in very acute-onset disease should not be used alone to exclude ALCD.",
+        "source": "WSES_2020_diverticulitis"
+      },
+      {
+        "id": "acute_course_hours_to_days",
+        "rule": "Diverticulitis is described as an acute presentation; chronic or non-acute features should be treated as lower-confidence for current acute ALCD unless imaging/labs support it.",
+        "source": "StatPearls_2024_diverticulitis"
+      },
+      {
+        "id": "post_acute_colonoscopy",
+        "rule": "After acute episode resolution, StatPearls recommends colonoscopy 6 to 8 weeks later, particularly if the patient has not had colonoscopy in the past 2 to 3 years.",
+        "source": "StatPearls_2024_diverticulitis"
+      }
+    ],
+    "negation_examples": [
+      {
+        "text_pattern": "denies vomiting",
+        "feature": "absence_of_vomiting",
+        "present": true,
+        "note": "Negation of vomiting IS positive for Lameris rule."
+      },
+      {
+        "text_pattern": "no LLQ tenderness",
+        "feature": "llq_tenderness",
+        "present": false
+      },
+      {
+        "text_pattern": "rule out diverticulitis",
+        "feature": "acute_colonic_diverticulitis",
+        "present": "uncertain_hypothesis_not_diagnosis"
+      },
+      {
+        "text_pattern": "history of diverticulitis",
+        "feature": "acute_colonic_diverticulitis",
+        "present": "historical_not_current"
+      }
+    ]
+  },
+  "source_grounded_exclusions": [
+    {
+      "excluded_claim": "Diverticulitis has an official 2-of-3 diagnostic rule.",
+      "reason": "Not supported by WSES 2020. WSES recommends complete assessment using clinical history, signs, inflammatory markers, and radiological findings; Lameris is a 3-feature clinical rule, not an official 2-of-3 diagnostic rule.",
+      "replacement": "Use multi-evidence assessment framework; CT confirms."
+    },
+    {
+      "excluded_claim": "CRP alone can confirm or exclude ALCD.",
+      "reason": "WSES 2020: CRP supports severity prediction and is part of Lameris rule but is not standalone diagnostic.",
+      "replacement": "Use CRP as severity triage / Lameris rule component, not as sole rule-in/rule-out."
+    },
+    {
+      "excluded_claim": "Clinical examination alone confirms diverticulitis.",
+      "reason": "WSES suggests against clinical-exam-only diagnosis (2D).",
+      "replacement": "Use complete assessment; for this KB, require imaging support for research-grade confirmed output."
+    },
+    {
+      "excluded_claim": "WSES Hinchey stage 1B and modified Hinchey stage 1B mean the same thing.",
+      "reason": "Multiple classifications exist (Hinchey, modified Hinchey/Kaiser 2005, Neff, Mora Lopez, WSES). They differ in substages and thresholds.",
+      "replacement": "Always state which classification is being used; default to WSES CT-guided classification for research output."
+    }
+  ],
+  "source_audit": {
+    "status": "revised_after_strict_source_grounded_audit",
+    "checked_sources": [
+      "WSES_2020_diverticulitis",
+      "StatPearls_2024_diverticulitis"
+    ],
+    "summary": "Claim-by-claim verification found the WSES CT classification, Lameris criteria, CRP thresholds, CT/US pathway, and many StatPearls presentation/complication claims source-grounded. Several interpretive, temporal, and differential-diagnosis details were narrowed, relabeled as inference, or rewritten to match the source documents only.",
+    "cautions": [
+      "This KB is for research LLM diagnostic support only.",
+      "WSES 2020 does not provide an official 2-of-3 diagnostic rule for diverticulitis; the Lameris rule has 3 features and is a clinical probability rule reported in WSES.",
+      "CT-guided staging requires CT imaging; do not stage from clinical features alone.",
+      "WSES 2020 covers left-sided ALCD primarily; right-sided diverticulitis has different epidemiology."
+    ],
+    "page_level_provenance": [
+      {
+        "claim_id": "WSES_CT_classification_stage_0",
+        "source_id": "WSES_2020_diverticulitis",
+        "source_page": "page 3",
+        "exact_quote": "0 Uncomplicated diverticulitis. Diverticula, thickening of the wall, increased density of the pericolic fat",
+        "verification_method": "Direct PDF extraction."
+      },
+      {
+        "claim_id": "WSES_CT_classification_stage_1A",
+        "source_id": "WSES_2020_diverticulitis",
+        "source_page": "page 3",
+        "exact_quote": "1A Pericolic air bubbles or small amount of pericolic fluid without abscess (within 5 cm from inflammed bowel segment)",
+        "verification_method": "Direct PDF extraction; note source typo \"inflammed\"."
+      },
+      {
+        "claim_id": "WSES_CT_classification_stage_1B_2A_2B",
+        "source_id": "WSES_2020_diverticulitis",
+        "source_page": "page 3",
+        "exact_quote": "1B Abscess ≤ 4 cm; 2A Abscess > 4 cm; 2B Distant gas (> 5 cm from inflammed bowel segment)",
+        "verification_method": "Direct PDF extraction."
+      },
+      {
+        "claim_id": "WSES_CT_classification_stage_3_4",
+        "source_id": "WSES_2020_diverticulitis",
+        "source_page": "page 3",
+        "exact_quote": "3 Diffuse fluid without distant free gas; 4 Diffuse fluid with distant free gas",
+        "verification_method": "Direct PDF extraction."
+      },
+      {
+        "claim_id": "lameris_high_probability_clinical_rule",
+        "source_id": "WSES_2020_diverticulitis",
+        "source_page": "page 3",
+        "exact_quote": "based on 3 criteria: (1) direct tenderness only in the left lower quadrant, (2) CRP > 50 mg/l, and (3) absence of vomiting. Of 126 clinically suspected patients enrolled in this prospective study, 30 patients had all 3 features (24%), of whom 29 had a final diagnosis of acute diverticulitis",
+        "verification_method": "Direct PDF extraction."
+      },
+      {
+        "claim_id": "crp_gt_150_complicated_risk",
+        "source_id": "WSES_2020_diverticulitis",
+        "source_page": "page 4",
+        "exact_quote": "a CRP value over 150 mg/l and old age were independent risk factors for acute complicated diverticulitis",
+        "verification_method": "Direct PDF extraction."
+      },
+      {
+        "claim_id": "crp_175_optimal_discrimination",
+        "source_id": "WSES_2020_diverticulitis",
+        "source_page": "page 4",
+        "exact_quote": "The optimal threshold was reached at 175 mg/l with a positive predictive value of 36%, negative predictive value of 92%, sensitivity of 61%, and specificity of 82%",
+        "verification_method": "Direct PDF extraction."
+      },
+      {
+        "claim_id": "cect_first_choice_imaging",
+        "source_id": "WSES_2020_diverticulitis",
+        "source_page": "page 4",
+        "exact_quote": "In patients with suspected ALCD, we suggest contrast-enhanced CT scan of the abdomen ... as the imaging technique of first choice (weak recommendation based on moderate-quality evidence, 2B)",
+        "verification_method": "Direct PDF extraction."
+      },
+      {
+        "claim_id": "us_then_ct_safe_approach",
+        "source_id": "WSES_2020_diverticulitis",
+        "source_page": "page 4",
+        "exact_quote": "a conditional strategy of CT after an inconclusive or negative US may be a safe approach for patients suspected of acute diverticulitis (weak recommendation based on moderate-quality evidence, 2B)",
+        "verification_method": "Direct PDF extraction."
+      },
+      {
+        "claim_id": "against_clinical_exam_only_diagnosis",
+        "source_id": "WSES_2020_diverticulitis",
+        "source_page": "page 3",
+        "exact_quote": "In patients with suspected ALCD we suggest against diagnosis based only on clinical examination (weak recommendation based on very low-quality evidence, 2D)",
+        "verification_method": "Direct PDF extraction."
+      }
+    ],
+    "strict_audit_outputs": {
+      "audit_mode": "claim_by_claim_against_source_documents_only",
+      "external_knowledge_policy": "No outside clinical knowledge retained unless explicitly relabeled as implementation policy or reasonable inference from the source documents.",
+      "hallucinations_or_unsupported_claims": [
+        "General symptom fever threshold >38°C was unsupported in symptom context; moved/limited to SIRS/admission context.",
+        "CRP <24h cutoff was unsupported; replaced with WSES 6–8 h delay and 48 h peak wording.",
+        "Specific US finding “thickened colonic wall with diverticula on US” was not clearly traceable; rewritten as US expert-operator pathway.",
+        "Detailed differential clues such as migratory pain, vascular risk factors, bloody diarrhea, renal colic to groin, epiploic appendagitis CT features were not supported by the source documents and were removed.",
+        "Fistula was incorrectly grouped with WSES CT stage assignment; retained as StatPearls-supported complicated disease but separated from WSES stage 0–4 mapping."
+      ],
+      "weak_provenance_areas": [
+        "Differential diagnosis: StatPearls gives a list but limited distinguishing clues; keep discriminators conservative.",
+        "Clinical NLP temporal rules: sources support acute presentation and CRP kinetics, not detailed chronicity rules.",
+        "Research-grade confirmation policy: conservative implementation derived from WSES complete-assessment guidance, not a verbatim guideline rule."
+      ],
+      "partially_supported_claims": [
+        "Lameris high-probability rule supports a clinical subgroup, but imaging-confirmation requirement is KB policy derived from WSES framework.",
+        "Alternative-more-likely pattern is a reasonable inference, not an explicit WSES diagnostic exclusion rule.",
+        "Colonoscopy/neoplasm language should follow source-specific contexts rather than broad cancer-mimic assumptions."
+      ]
+    }
+  }
+}

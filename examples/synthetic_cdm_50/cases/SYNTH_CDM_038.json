@@ -1,0 +1,82 @@
+{
+  "case_id": "SYNTH_CDM_038",
+  "synthetic": true,
+  "history_of_present_illness": "48-year-old man. Twenty-four hours of persistent right upper abdominal pain after several shorter episodes over the past month. Appetite is poor.",
+  "physical_examination": "Right subcostal tenderness with inspiratory arrest; no diffuse guarding.",
+  "vital_signs": {
+    "temperature_c": 37.7,
+    "heart_rate_per_min": 112,
+    "blood_pressure_mmhg": "122/70",
+    "respiratory_rate_per_min": 18,
+    "spo2_percent_room_air": 98
+  },
+  "laboratory_tests": {
+    "WBC": {
+      "value": 16.2,
+      "unit": "10^9/L",
+      "reference_range": "4.0-11.0"
+    },
+    "Hemoglobin": {
+      "value": 13.1,
+      "unit": "g/dL",
+      "reference_range": "12.0-17.5"
+    },
+    "Platelets": {
+      "value": 283,
+      "unit": "10^9/L",
+      "reference_range": "150-400"
+    },
+    "Sodium": {
+      "value": 136,
+      "unit": "mmol/L",
+      "reference_range": "135-145"
+    },
+    "Potassium": {
+      "value": 3.7,
+      "unit": "mmol/L",
+      "reference_range": "3.5-5.0"
+    },
+    "Creatinine": {
+      "value": 0.9,
+      "unit": "mg/dL",
+      "reference_range": "0.6-1.3"
+    },
+    "CRP": {
+      "value": 126,
+      "unit": "mg/L",
+      "reference_range": "<5"
+    },
+    "Lipase": {
+      "value": 41,
+      "unit": "U/L",
+      "reference_range": "13-60"
+    },
+    "ALT": {
+      "value": 66,
+      "unit": "U/L",
+      "reference_range": "7-45"
+    },
+    "AST": {
+      "value": 52,
+      "unit": "U/L",
+      "reference_range": "10-40"
+    },
+    "Alkaline phosphatase": {
+      "value": 103,
+      "unit": "U/L",
+      "reference_range": "40-130"
+    },
+    "Total bilirubin": {
+      "value": 1.0,
+      "unit": "mg/dL",
+      "reference_range": "0.2-1.2"
+    }
+  },
+  "imaging": [
+    {
+      "region": "Abdomen",
+      "findings": "Ultrasound abdomen: gallbladder-neck stone, 5 mm wall thickening and increased mural vascularity; common bile duct 4 mm."
+    }
+  ],
+  "input_case": "History of Present Illness:\n48-year-old man. Twenty-four hours of persistent right upper abdominal pain after several shorter episodes over the past month. Appetite is poor.\n\nPhysical Examination:\nRight subcostal tenderness with inspiratory arrest; no diffuse guarding. Temperature 37.7 C; heart rate 112/min; BP 122/70 mmHg; respiratory rate 18/min; SpO2 98% on room air.\n\nLaboratory Tests:\nWBC: 16.2 10^9/L (reference 4.0-11.0)\nHemoglobin: 13.1 g/dL (reference 12.0-17.5)\nPlatelets: 283 10^9/L (reference 150-400)\nSodium: 136 mmol/L (reference 135-145)\nPotassium: 3.7 mmol/L (reference 3.5-5.0)\nCreatinine: 0.9 mg/dL (reference 0.6-1.3)\nCRP: 126 mg/L (reference <5)\nLipase: 41 U/L (reference 13-60)\nALT: 66 U/L (reference 7-45)\nAST: 52 U/L (reference 10-40)\nAlkaline phosphatase: 103 U/L (reference 40-130)\nTotal bilirubin: 1.0 mg/dL (reference 0.2-1.2)\n\nImaging Findings:\nUltrasound abdomen: gallbladder-neck stone, 5 mm wall thickening and increased mural vascularity; common bile duct 4 mm."
+}

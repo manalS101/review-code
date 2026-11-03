@@ -1,0 +1,5 @@
+# Client side only. The model server is installed separately on the GPU host;
+# any OpenAI-compatible endpoint works. See the README for how to point at one.
+pandas>=2.0
+pydantic>=2.0
+openai>=1.0

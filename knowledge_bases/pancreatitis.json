@@ -1,0 +1,1542 @@
+{
+  "clinical_review": {
+    "status": "accepted",
+    "procedure": "Reviewed independently by a medical expert and by a project author. No knowledge base was accepted until every critical item was approved or explicitly flagged for revision. Review was divided by clinical condition.",
+    "medical_expert_specialty": "Consultant in Internal Medicine",
+    "medical_expert_checklist": [
+      "The disease-specific diagnostic framework is clinically appropriate.",
+      "All concepts are correctly classified as diagnostic, supportive, etiologic, severity, complication, or exclusion evidence.",
+      "Every diagnostic rule, criterion, threshold, unit, timing condition, and population restriction is confirmed.",
+      "No unsupported rule was invented, and supportive findings cannot independently confirm the diagnosis.",
+      "The what-does-not-count, contradiction, insufficient-evidence, abstention, and referral rules reflect safe clinical practice.",
+      "Every clinical item is accurately grounded in the cited sources."
+    ],
+    "project_author_checklist": [
+      "All concepts and rules have correct source provenance.",
+      "The JSON structure, concept identifiers, rule references, and value types are valid and consistent.",
+      "Missing evidence remains unknown and cannot accidentally activate a rule.",
+      "The verifier is deterministic and reports the decision, supporting evidence, missing or conflicting evidence, and justification.",
+      "Clear positive, unsupported, incomplete, contradictory, and threshold-boundary cases are tested."
+    ],
+    "revisions_arising_from_review": {
+      "all_knowledge_bases": [
+        "A claim-by-claim audit was introduced. Every diagnostic concept, threshold, and relationship was required to trace to one of the two cited sources. Derived elements, such as language normalization and differential-handling logic, were relabelled as implementation logic rather than guideline facts.",
+        "Each concept was assigned one of four states: present, absent, unknown, or conflicting. Missing documentation remains unknown. Diagnostic, supportive, etiologic, severity, complication, and management evidence are stored separately, so that only explicitly diagnostic evidence can activate the verifier.",
+        "The four knowledge bases keep different decision structures rather than one shared formula: a two-of-three rule for pancreatitis, integrated clinical and imaging assessment for cholecystitis, CT-supported multi-evidence assessment for diverticulitis, and stepwise risk stratification followed by imaging for appendicitis.",
+        "Unsupported or partially supported claims were deleted or rewritten, and explicit cautions were added stating that no official two-of-three rule exists for appendicitis, cholecystitis, or diverticulitis."
+      ],
+      "pancreatitis": [
+        "The Revised Atlanta rule was encoded as characteristic epigastric pain, pancreatic enzymes at least three times the upper limit of normal, or imaging showing acute pancreatitis.",
+        "Back pain alone no longer satisfies the pain criterion, and gallstones do not satisfy the imaging criterion.",
+        "CRP, BUN, hematocrit, procalcitonin, and organ failure were excluded from diagnostic counting."
+      ]
+    },
+    "known_limitation": "Each condition carries one clinician's assessment, so criterion-level agreement between clinicians is not available. Specialty-matched review by two independent clinicians per condition, with adjudication of disagreement, precedes clinical use.",
+    "record_of_review": "Supplementary Material, section 4 (expert review and acceptance checklist) and Table S1 (specific improvements introduced during iterative revision)."
+  },
+  "kb_id": "pancreatitis_integrated_diagnostic_kb_v2_normalized",
+  "schema_version": "2.0",
+  "disease": {
+    "project_label": "pancreatitis",
+    "canonical_name": "acute_pancreatitis",
+    "scope": "adult acute pancreatitis presentations; not a treatment recommendation system",
+    "intended_use": "agent knowledge base for acute pancreatitis. The KB is designed for evidence extraction, guideline-grounded diagnostic verification, severity/etiology assessment, and abstention when diagnostic evidence is insufficient."
+  },
+  "version": {
+    "version": "2.0-normalized",
+    "created_utc": "2026-05-16T00:00:00Z",
+    "construction_policy": "One integrated KB with fact-level provenance. WSES provides the primary computable diagnostic rule; StatPearls provides clinical presentation language, broader etiologic context, differential diagnosis, and explanatory mapping for LLM extraction.",
+    "enhancement_policy": "Normalized to diagnostic_kb_schema_v2; added evidence_interpretation_layer, contradictory_and_uncertainty_layer, and clinical_nlp_context_layer (previously absent); added page_level_provenance verified against StatPearls Acute Pancreatitis PDF; no core source-grounded claims changed."
+  },
+  "sources": [
+    {
+      "source_id": "WSES_2019",
+      "title": "2019 WSES guidelines for the management of severe acute pancreatitis",
+      "role": [
+        "primary diagnostic criteria",
+        "laboratory thresholds",
+        "imaging work-up rules",
+        "severity definitions",
+        "selected prognostic and infection markers",
+        "etiology workup thresholds"
+      ],
+      "doi": "10.1186/s13017-019-0247-0",
+      "license_or_access": "CC BY 4.0",
+      "notes": "Priority: primary_rule_authority"
+    },
+    {
+      "source_id": "StatPearls_2025",
+      "title": "Acute Pancreatitis - StatPearls - NCBI Bookshelf",
+      "role": [
+        "clinical presentation language",
+        "history and physical examination mapping",
+        "etiology context",
+        "routine evaluation context",
+        "differential diagnosis"
+      ],
+      "last_update": "2025-08-02",
+      "notes": "Priority: clinical_language_and_context_authority"
+    },
+    {
+      "source_id": "project_extracts",
+      "title": "Pancreatitis Diagnostic Extracts and Provenance",
+      "role": [
+        "internal_project_audit_only_not_clinical_source",
+        "provenance trail",
+        "unsupported-rule prevention",
+        "project-level source policy"
+      ],
+      "notes": "Priority: project_provenance"
+    }
+  ],
+  "scientific_guardrails": {
+    "no_fake_n_of_m_rule": false,
+    "rationale": "Acute pancreatitis HAS a formal 2-of-3 diagnostic rule (Revised Atlanta Classification, also adopted by WSES 2019). The agent must apply this rule strictly and not confirm from symptoms alone, single labs alone, or imaging that lacks pancreatitis-specific findings.",
+    "diagnosis_should_not_be_based_on": [
+      "epigastric pain alone",
+      "nausea/vomiting/anorexia alone",
+      "CRP, hematocrit, urea/BUN, or procalcitonin alone (these are severity/prognostic markers, not diagnostic criteria)",
+      "\"elevated lipase\" without ≥3× ULN documentation",
+      "gallstones on imaging alone without imaging signs of pancreatitis"
+    ],
+    "must_report_uncertainty_when": [
+      "only 1 of 3 Revised Atlanta criteria is met",
+      "lipase/amylase values are present but ULN is unavailable and the report does not explicitly say \"≥3× ULN\"",
+      "imaging shows biliary etiology features only without pancreatic inflammation",
+      "symptoms are nonspecific and labs/imaging are incomplete"
+    ]
+  },
+  "diagnostic_framework": {
+    "framework_type": "n_of_m_rule",
+    "primary_rule": {
+      "id": "AP_DX_REVISED_ATLANTA_WSES_N_OF_3",
+      "role": "diagnostic_framework",
+      "rule_type": "n_of_m",
+      "required_count": 2,
+      "total_count": 3,
+      "criteria": [
+        "AP_C1_PAIN",
+        "AP_C2_ENZYMES",
+        "AP_C3_IMAGING"
+      ],
+      "criterion_definitions": {
+        "AP_C1_PAIN": {
+          "definition": "Abdominal pain consistent with acute pancreatitis (characteristic epigastric pain often radiating to the back).",
+          "positive_language_mappings": [
+            "epigastric abdominal pain",
+            "upper abdominal pain consistent with pancreatitis",
+            "moderate-to-severe epigastric pain",
+            "deep epigastric pain",
+            "burning epigastric pain",
+            "stabbing epigastric pain",
+            "sudden epigastric pain radiating to the back",
+            "epigastric pain radiating to the back"
+          ],
+          "supportive_but_not_required": [
+            "nausea",
+            "vomiting",
+            "anorexia",
+            "malaise",
+            "fever with epigastric pain",
+            "epigastric tenderness",
+            "guarding",
+            "mild rigidity",
+            "abdominal distension",
+            "decreased bowel sounds"
+          ],
+          "agent_instruction": "Mark this criterion present when epigastric or upper-abdominal pain consistent with pancreatitis is documented. Radiation to the back is CHARACTERISTIC but NOT required -- do NOT mark the criterion absent merely because the pain does not radiate to the back (WSES/Atlanta criterion (i) = 'abdominal pain consistent with the disease'; StatPearls: pain 'often radiates to the back'). Supportive symptoms such as nausea/vomiting alone should not satisfy this criterion.",
+          "agent_warning": "Back pain alone should not satisfy the pancreatitis pain criterion."
+        },
+        "AP_C2_ENZYMES": {
+          "definition": "Serum amylase and/or lipase greater than three times the upper limit of normal.",
+          "preferred_test": "lipase",
+          "threshold_operator": ">=",
+          "threshold_multiplier_of_uln": 3,
+          "agent_instruction": "If ULN is available, compute value/ULN. If ULN is unavailable but the note explicitly states 'lipase >3x ULN' or equivalent, mark present. Do not infer 3x ULN from 'elevated' alone."
+        },
+        "AP_C3_IMAGING": {
+          "definition": "Characteristic abdominal imaging findings consistent with acute pancreatitis.",
+          "accepted_modalities": [
+            "abdominal ultrasound",
+            "CT",
+            "contrast-enhanced CT",
+            "MRI"
+          ],
+          "strong_imaging_findings": [
+            "acute pancreatitis on CT",
+            "pancreatic inflammation",
+            "necrotizing pancreatitis",
+            "interstitial edematous pancreatitis"
+          ],
+          "supportive_imaging_findings": [
+            "peripancreatic fluid collection",
+            "peripancreatic inflammatory change",
+            "pancreatic enlargement"
+          ],
+          "agent_instruction": "Mark present only if report/impression explicitly supports pancreatitis or describes characteristic pancreatic/peripancreatic inflammatory findings. Biliary stones alone support etiology, not the imaging diagnostic criterion unless pancreatitis findings are also present.",
+          "etiology_workup_modalities": [
+            "MRCP for occult choledocholithiasis or biliary etiology evaluation",
+            "EUS for occult biliary disease or microlithiasis evaluation"
+          ]
+        }
+      },
+      "decision_outputs": {
+        "confirmed": ">=2 diagnostic criteria are present.",
+        "possible_insufficient_evidence": "Only 1 diagnostic criterion is present, or evidence is suggestive but incomplete.",
+        "insufficient_evidence": "No diagnostic criteria are confirmed and available evidence is incomplete.",
+        "unlikely_based_on_available_evidence": "Available evidence actively argues against pancreatitis.",
+        "uncertain_due_to_missing_data": "Key labs/imaging/pain details are unknown and available evidence cannot establish two criteria."
+      },
+      "source": [
+        "WSES_2019",
+        "StatPearls_2025"
+      ],
+      "agent_instruction": "Never confirm acute pancreatitis from symptoms alone. Never use etiology markers, CRP, hematocrit, urea/BUN, or procalcitonin as diagnostic criteria."
+    },
+    "diagnostic_outputs": [
+      "confirmed_acute_pancreatitis",
+      "possible_acute_pancreatitis_insufficient_evidence",
+      "not_supported_by_available_evidence",
+      "uncertain_due_to_missing_data"
+    ],
+    "minimum_agent_output_fields": [
+      "diagnosis_label",
+      "criteria_met",
+      "criteria_missing_or_unknown",
+      "supportive_findings_not_counted",
+      "likely_etiology",
+      "severity",
+      "red_flags_or_high_risk_markers",
+      "reasoning_summary",
+      "source_trace"
+    ]
+  },
+  "clinical_concepts": {
+    "symptoms": [
+      {
+        "id": "epigastric_pain",
+        "display": "epigastric abdominal pain",
+        "synonyms": [
+          "upper abdominal pain",
+          "deep epigastric pain",
+          "burning epigastric pain",
+          "stabbing epigastric pain"
+        ],
+        "role": "diagnostic_criterion_AP_C1",
+        "source": "StatPearls_2025",
+        "source_page": "page 5 (History and Physical)",
+        "exact_quote": "moderate-to-severe epigastric abdominal pain, often described as deep, burning, or stabbing, with radiation to the back",
+        "diagnostic_weight": "maps_to_criterion_AP_C1_PAIN"
+      },
+      {
+        "id": "epigastric_pain_radiating_to_back",
+        "display": "epigastric pain radiating to the back",
+        "role": "diagnostic_criterion_AP_C1",
+        "source": "StatPearls_2025",
+        "source_page": "page 5 (History and Physical)",
+        "exact_quote": "epigastric abdominal pain ... with radiation to the back",
+        "diagnostic_weight": "classic_pattern"
+      },
+      {
+        "id": "nausea_or_vomiting",
+        "display": "nausea with or without vomiting",
+        "role": "supportive_symptom",
+        "source": "StatPearls_2025",
+        "source_page": "page 5",
+        "exact_quote": "Nausea, vomiting, and anorexia commonly accompany pancreatitis",
+        "diagnostic_weight": "supportive_not_criterion"
+      },
+      {
+        "id": "anorexia",
+        "display": "anorexia",
+        "role": "supportive_symptom",
+        "source": "StatPearls_2025",
+        "source_page": "page 5",
+        "diagnostic_weight": "supportive_not_criterion"
+      },
+      {
+        "id": "fever",
+        "display": "fever",
+        "role": "supportive_symptom",
+        "source": "StatPearls_2025",
+        "diagnostic_weight": "supportive_not_criterion"
+      }
+    ],
+    "physical_exam": [
+      {
+        "id": "epigastric_tenderness",
+        "display": "epigastric tenderness",
+        "role": "supportive_exam_feature",
+        "source": "StatPearls_2025",
+        "source_page": "page 5-6",
+        "diagnostic_weight": "supportive"
+      },
+      {
+        "id": "guarding_or_mild_rigidity",
+        "display": "guarding or mild rigidity",
+        "role": "supportive_exam_feature",
+        "source": "StatPearls_2025",
+        "source_page": "page 5-6",
+        "diagnostic_weight": "supportive"
+      },
+      {
+        "id": "abdominal_distension",
+        "display": "abdominal distension",
+        "role": "severity_associated_feature",
+        "source": "StatPearls_2025",
+        "source_page": "page 6",
+        "exact_quote": "abdominal distension is more frequently observed in severe or necrotizing disease",
+        "diagnostic_weight": "severity_associated"
+      },
+      {
+        "id": "decreased_bowel_sounds",
+        "display": "decreased bowel sounds",
+        "role": "supportive_exam_feature",
+        "source": "StatPearls_2025",
+        "source_page": "page 6",
+        "diagnostic_weight": "supportive"
+      },
+      {
+        "id": "cullen_sign",
+        "display": "Cullen sign (periumbilical ecchymosis)",
+        "role": "hemorrhagic_complication_sign",
+        "source": "StatPearls_2025",
+        "source_page": "page 6",
+        "exact_quote": "Cullen sign, characterized by periumbilical ecchymosis ... suggest hemorrhagic pancreatitis with retroperitoneal or peritoneal bleeding",
+        "diagnostic_weight": "severity_or_complication_marker"
+      },
+      {
+        "id": "grey_turner_sign",
+        "display": "Grey-Turner sign (flank ecchymosis)",
+        "role": "hemorrhagic_complication_sign",
+        "source": "StatPearls_2025",
+        "source_page": "page 6",
+        "exact_quote": "Grey-Turner sign, marked by flank ecchymosis, suggest hemorrhagic pancreatitis",
+        "diagnostic_weight": "severity_or_complication_marker"
+      },
+      {
+        "id": "jaundice",
+        "display": "jaundice",
+        "role": "biliary_etiology_hint",
+        "source": "StatPearls_2025",
+        "source_page": "page 6",
+        "exact_quote": "Jaundice may reflect biliary obstruction or concomitant cholangitis",
+        "diagnostic_weight": "etiology_supportive_not_diagnostic"
+      }
+    ],
+    "temporal_features": [
+      {
+        "id": "sudden_onset_pain",
+        "display": "sudden onset of pain",
+        "role": "temporal_context",
+        "source": "StatPearls_2025",
+        "source_page": "page 5"
+      },
+      {
+        "id": "gradual_onset_in_alcoholic_pancreatitis",
+        "display": "less localized gradual onset in alcohol-induced pancreatitis",
+        "role": "etiology_temporal_context",
+        "source": "StatPearls_2025",
+        "source_page": "page 5"
+      }
+    ]
+  },
+  "laboratory_evidence": {
+    "general": [
+      {
+        "id": "lipase",
+        "display": "serum lipase (preferred diagnostic enzyme)",
+        "role": "diagnostic_criterion_AP_C2",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ],
+        "source_page": "StatPearls page 6 (Evaluation)",
+        "exact_quote": "Serum amylase or lipase level 3 or more times the upper limit of normal",
+        "diagnostic_use": "one of the 3 Revised Atlanta diagnostic criteria; lipase preferred over amylase for sensitivity/specificity"
+      },
+      {
+        "id": "amylase",
+        "display": "serum amylase",
+        "role": "diagnostic_criterion_AP_C2",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ],
+        "source_page": "StatPearls page 6 (Evaluation)",
+        "diagnostic_use": "alternative to lipase; less specific"
+      },
+      {
+        "id": "crp",
+        "display": "C-reactive protein",
+        "role": "severity_prognostic_marker",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ],
+        "diagnostic_use": "NOT a diagnostic criterion; severity/prognostic only"
+      },
+      {
+        "id": "wbc",
+        "display": "white blood cell count",
+        "role": "inflammatory_marker",
+        "source": "StatPearls_2025",
+        "diagnostic_use": "supportive; NOT a diagnostic criterion"
+      },
+      {
+        "id": "bun",
+        "display": "blood urea nitrogen",
+        "role": "severity_prognostic_marker",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ],
+        "source_page": "StatPearls page 8",
+        "exact_quote": "Serial BUN and hematocrit measurements can provide additional prognostic information",
+        "diagnostic_use": "NOT a diagnostic criterion; prognostic only"
+      },
+      {
+        "id": "hematocrit",
+        "display": "hematocrit",
+        "role": "severity_prognostic_marker",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ],
+        "source_page": "StatPearls page 8",
+        "diagnostic_use": "NOT a diagnostic criterion; prognostic only"
+      },
+      {
+        "id": "procalcitonin",
+        "display": "procalcitonin",
+        "role": "infection_marker",
+        "source": "WSES_2019",
+        "diagnostic_use": "NOT a diagnostic criterion; marker for pancreatic infection/infected necrosis context"
+      },
+      {
+        "id": "triglycerides",
+        "display": "serum triglycerides",
+        "role": "etiology_marker",
+        "source": "StatPearls_2025",
+        "source_page": "page 3",
+        "diagnostic_use": "etiology only; not a diagnostic criterion"
+      },
+      {
+        "id": "alt",
+        "display": "ALT (alanine aminotransferase)",
+        "role": "biliary_etiology_marker",
+        "source": "StatPearls_2025",
+        "source_page": "page 6",
+        "diagnostic_use": "etiology marker for gallstone pancreatitis"
+      }
+    ],
+    "thresholds": [
+      {
+        "id": "lipase_or_amylase_ge_3x_uln",
+        "marker": "lipase or amylase",
+        "operator": ">=",
+        "value": "3x upper limit of normal",
+        "unit": "multiplier_of_ULN",
+        "meaning": "Satisfies the second Revised Atlanta diagnostic criterion (AP_C2_ENZYMES).",
+        "role": "diagnostic_criterion_threshold",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ],
+        "source_page": "StatPearls page 6 (Evaluation)",
+        "exact_quote": "Serum amylase or lipase level 3 or more times the upper limit of normal"
+      },
+      {
+        "id": "crp_ge_150_day3",
+        "marker": "CRP",
+        "operator": ">=",
+        "value": 150,
+        "unit": "mg/L",
+        "population": "at day 3 from onset",
+        "meaning": "Prognostic factor for severe acute pancreatitis. NOT a diagnostic criterion.",
+        "role": "severity_prognostic",
+        "source": "WSES_2019"
+      },
+      {
+        "id": "hematocrit_gt_44",
+        "marker": "hematocrit",
+        "operator": ">",
+        "value": 44,
+        "unit": "%",
+        "meaning": "Independent risk factor for pancreatic necrosis. NOT a diagnostic criterion.",
+        "role": "severity_prognostic",
+        "source": "WSES_2019"
+      },
+      {
+        "id": "bun_gt_20",
+        "marker": "BUN",
+        "operator": ">",
+        "value": 20,
+        "unit": "mg/dL",
+        "meaning": "Independent predictor of mortality. NOT a diagnostic criterion.",
+        "role": "severity_prognostic",
+        "source": "WSES_2019"
+      },
+      {
+        "id": "triglycerides_gt_1000",
+        "marker": "triglycerides",
+        "operator": ">",
+        "value": 1000,
+        "unit": "mg/dL",
+        "meaning": "Supports hypertriglyceridemia as etiology. Etiology only — not diagnostic.",
+        "role": "etiology_threshold",
+        "source": "StatPearls_2025",
+        "source_page": "page 3",
+        "exact_quote": "A level above 1000 mg/dL supports hypertriglyceridemia as the likely etiology"
+      },
+      {
+        "id": "alt_gt_150_first_48h",
+        "marker": "ALT",
+        "operator": ">",
+        "value": 150,
+        "unit": "U/L",
+        "population": "within first 48 hours of symptom onset",
+        "meaning": "Positive predictive value exceeding 85% for gallstone pancreatitis etiology. Etiology only — not diagnostic.",
+        "role": "etiology_threshold",
+        "source": "StatPearls_2025",
+        "source_page": "page 6",
+        "exact_quote": "An alanine aminotransferase (ALT) level greater than 150 U/L within the first 48 hours of symptom onset has a positive predictive value exceeding 85% for gallstone pancreatitis"
+      }
+    ],
+    "normal_lab_caution": {
+      "statement": "If AP_C2 is not met because amylase/lipase are normal or below the diagnostic threshold, acute pancreatitis should not be confirmed from enzymes. Diagnosis still requires at least 2 of AP_C1, AP_C2, and AP_C3. Enzyme timing should be interpreted with caution because WSES describes amylase and lipase rise/peak/decline kinetics.",
+      "source": [
+        "WSES_2019",
+        "StatPearls_2025"
+      ]
+    }
+  },
+  "imaging_evidence": {
+    "pathway_policy": [
+      {
+        "id": "us_admission_biliary_etiology",
+        "statement": "Perform abdominal ultrasound on admission or early to assess biliary etiology (gallstones, biliary dilation, sludge).",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ]
+      },
+      {
+        "id": "ct_when_diagnostic_doubt",
+        "statement": "CT provides evidence for presence or absence of pancreatitis when diagnostic doubt exists.",
+        "source": "WSES_2019"
+      },
+      {
+        "id": "cross_sectional_not_routine_mild",
+        "statement": "Cross-sectional imaging is not routinely required in clear mild cases; it becomes important with diagnostic uncertainty or failure to improve/worsening after 48-72 hours.",
+        "source": "StatPearls_2025"
+      },
+      {
+        "id": "severe_ap_cect_or_mri",
+        "statement": "Severe acute pancreatitis should be assessed with contrast-enhanced CT or MRI.",
+        "source": "WSES_2019"
+      },
+      {
+        "id": "first_cect_72_96h",
+        "statement": "Optimal timing for first contrast-enhanced CT assessment in severe disease is 72-96 hours after symptom onset.",
+        "source": "WSES_2019"
+      },
+      {
+        "id": "mrcp_eus_occult_cbd_stones",
+        "statement": "MRCP or EUS should be considered for occult common bile duct stones when etiology is unknown.",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ]
+      }
+    ],
+    "ct_findings": [
+      {
+        "id": "pancreatic_inflammation_on_ct",
+        "display": "pancreatic inflammation on CT",
+        "role": "strong_diagnostic_imaging",
+        "source": "StatPearls_2025",
+        "diagnostic_weight": "satisfies_AP_C3_IMAGING"
+      },
+      {
+        "id": "peripancreatic_inflammation_or_fat_stranding",
+        "display": "peripancreatic inflammation/fat stranding",
+        "role": "strong_diagnostic_imaging",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ],
+        "diagnostic_weight": "satisfies_AP_C3_IMAGING"
+      },
+      {
+        "id": "pancreatic_necrosis",
+        "display": "pancreatic necrosis (necrotizing pancreatitis)",
+        "role": "severe_disease_imaging",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ],
+        "diagnostic_weight": "satisfies_AP_C3_IMAGING_and_severity_marker"
+      },
+      {
+        "id": "peripancreatic_fluid_collection",
+        "display": "peripancreatic fluid collection",
+        "role": "supportive_imaging",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ],
+        "diagnostic_weight": "supportive_combine_with_clinical"
+      },
+      {
+        "id": "interstitial_edematous_pancreatitis",
+        "display": "interstitial edematous pancreatitis",
+        "role": "strong_diagnostic_imaging",
+        "source": "WSES_2019",
+        "diagnostic_weight": "satisfies_AP_C3_IMAGING"
+      }
+    ],
+    "us_findings": [
+      {
+        "id": "us_gallstones",
+        "display": "gallstones on ultrasound",
+        "role": "biliary_etiology_marker",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ],
+        "diagnostic_weight": "etiology_only_NOT_diagnostic_criterion",
+        "caution": "Gallstones alone do not satisfy AP_C3_IMAGING; only pancreatic/peripancreatic inflammatory findings do."
+      },
+      {
+        "id": "us_biliary_dilation",
+        "display": "biliary dilation on ultrasound",
+        "role": "biliary_etiology_marker",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ],
+        "diagnostic_weight": "etiology_only"
+      },
+      {
+        "id": "us_biliary_sludge",
+        "display": "biliary sludge on ultrasound",
+        "role": "biliary_etiology_marker",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ],
+        "diagnostic_weight": "etiology_only"
+      }
+    ],
+    "mri_findings": [
+      {
+        "id": "mri_pancreatic_inflammation",
+        "display": "pancreatic inflammation on MRI",
+        "role": "strong_diagnostic_imaging",
+        "source": "WSES_2019",
+        "diagnostic_weight": "satisfies_AP_C3_IMAGING"
+      },
+      {
+        "id": "mrcp_cbd_stones",
+        "display": "common bile duct stones on MRCP",
+        "role": "biliary_etiology_marker",
+        "source": "WSES_2019",
+        "diagnostic_weight": "etiology_workup"
+      }
+    ],
+    "normalization_notes": {
+      "satisfies_imaging_criterion": [
+        "acute pancreatitis on CT",
+        "pancreatic inflammation",
+        "peripancreatic fat stranding",
+        "pancreatic necrosis",
+        "necrotizing pancreatitis",
+        "interstitial edematous pancreatitis"
+      ],
+      "supportive_only_NOT_satisfies_alone": [
+        "peripancreatic fluid collection alone",
+        "pancreatic enlargement alone"
+      ],
+      "does_NOT_satisfy_imaging_criterion": [
+        "gallstones only",
+        "biliary dilation only",
+        "pancreatic divisum",
+        "pancreatic mass without inflammation"
+      ],
+      "caution": "AP_C3_IMAGING requires findings characteristic of pancreatitis itself; biliary findings alone are etiology workup."
+    }
+  },
+  "severity_assessment": {
+    "role": "post-diagnosis_or_high-suspicion_risk_stratification",
+    "source_ids": [
+      "WSES_2019",
+      "StatPearls_2025"
+    ],
+    "severity_classes": {
+      "mild": {
+        "definition": "No organ failure and no local or systemic complications.",
+        "diagnostic_role": "severity_only_not_diagnostic"
+      },
+      "moderately_severe": {
+        "definition": "Transient organ failure lasting less than 48 hours and/or local or systemic complications without persistent organ failure.",
+        "diagnostic_role": "severity_only_not_diagnostic"
+      },
+      "severe": {
+        "definition": "Persistent organ failure greater than 48 hours; WSES emphasizes cardiovascular, respiratory, and/or renal organ failure.",
+        "diagnostic_role": "severity_only_not_diagnostic"
+      },
+      "critical_DBC_context": {
+        "definition": "Persistent organ failure plus infected pancreatic/peripancreatic necrosis.",
+        "diagnostic_role": "severity/risk_context_only"
+      }
+    },
+    "organ_failure_systems": [
+      "cardiovascular",
+      "respiratory",
+      "renal"
+    ],
+    "high_risk_features": [
+      {
+        "id": "persistent_organ_failure_gt_48h",
+        "role": "severe_classification",
+        "source_ids": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ]
+      },
+      {
+        "id": "infected_necrosis",
+        "role": "highest_risk_context",
+        "source_ids": [
+          "WSES_2019"
+        ]
+      },
+      {
+        "id": "sirs",
+        "role": "risk_of_progression",
+        "source_ids": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ]
+      }
+    ],
+    "prognostic_or_infection_markers_not_diagnostic": [
+      {
+        "id": "crp_ge_150_mg_L_day_3",
+        "meaning": "Prognostic factor for severe acute pancreatitis.",
+        "source_ids": [
+          "WSES_2019"
+        ]
+      },
+      {
+        "id": "hematocrit_gt_44_percent",
+        "meaning": "Independent risk factor of pancreatic necrosis.",
+        "source_ids": [
+          "WSES_2019"
+        ]
+      },
+      {
+        "id": "urea_gt_20_mg_dL",
+        "meaning": "Independent predictor of mortality.",
+        "source_ids": [
+          "WSES_2019"
+        ]
+      },
+      {
+        "id": "procalcitonin",
+        "meaning": "Marker useful for detection/negative prediction of pancreatic infection/infected necrosis context.",
+        "source_ids": [
+          "WSES_2019"
+        ]
+      },
+      {
+        "id": "rising_BUN_or_hematocrit",
+        "meaning": "May reflect inadequate fluid resuscitation and worse outcomes.",
+        "source_ids": [
+          "StatPearls_2025"
+        ]
+      }
+    ],
+    "source_page": {
+      "mild_moderately_severe_severe": "StatPearls page 8 (Severity Assessment); WSES 2019 severity definitions",
+      "persistent_organ_failure_48h": "StatPearls page 2 — exact quote: \"Severe acute pancreatitis is marked by persistent organ failure exceeding 48 hours, often involving multiple organ systems.\""
+    }
+  },
+  "etiology_assessment": {
+    "role": "after_suspected_or_confirmed_pancreatitis",
+    "source_ids": [
+      "WSES_2019",
+      "StatPearls_2025"
+    ],
+    "etiologies": {
+      "biliary": {
+        "supporting_findings": [
+          "gallstones",
+          "biliary sludge",
+          "common bile duct dilation",
+          "biliary dilation on imaging",
+          "ALT >150 U/L within first 48 hours",
+          "jaundice or biochemical liver involvement"
+        ],
+        "notes": "Gallstones/bile stones are a common cause. Ultrasound is used to assess biliary etiology.",
+        "diagnostic_role": "etiology_not_core_diagnostic_criterion"
+      },
+      "alcohol_related": {
+        "supporting_findings": [
+          "chronic heavy alcohol use",
+          "approximately 4-5 drinks daily for more than 5 years",
+          "absence of biliary pathology with compatible history"
+        ],
+        "notes": "No specific laboratory marker confirms alcohol as etiology; history is primary.",
+        "diagnostic_role": "etiology_not_core_diagnostic_criterion"
+      },
+      "hypertriglyceridemia": {
+        "supporting_findings": [
+          "serum triglycerides >1000 mg/dL",
+          "serum triglycerides >11.3 mmol/L"
+        ],
+        "workup_trigger": "Measure triglycerides when gallstones or significant alcohol history are absent.",
+        "diagnostic_role": "etiology_not_core_diagnostic_criterion"
+      },
+      "hypercalcemia": {
+        "supporting_findings": [
+          "elevated serum calcium"
+        ],
+        "workup_trigger": "Measure calcium when gallstones or significant alcohol history are absent.",
+        "diagnostic_role": "etiology_not_core_diagnostic_criterion"
+      },
+      "drug_induced": {
+        "supporting_medications_from_statpearls": [
+          "azathioprine",
+          "6-mercaptopurine",
+          "valproic acid",
+          "didanosine",
+          "mesalamine",
+          "ACE inhibitors"
+        ],
+        "diagnostic_role": "etiology_not_core_diagnostic_criterion"
+      },
+      "postprocedural_or_structural": {
+        "supporting_findings": [
+          "recent ERCP",
+          "recent abdominal surgery",
+          "ampullary stenosis",
+          "pancreas divisum",
+          "pancreatic duct obstruction",
+          "neoplasm/stricture/postoperative scarring"
+        ],
+        "diagnostic_role": "etiology_not_core_diagnostic_criterion"
+      },
+      "genetic_or_autoimmune": {
+        "supporting_findings": [
+          "early-onset recurrent or idiopathic pancreatitis",
+          "positive family history",
+          "IgG4-related disease context",
+          "PRSS1, SPINK1, CFTR, CTRC, CASR, CLDN2 susceptibility context"
+        ],
+        "diagnostic_role": "etiology_context_not_core_diagnostic_criterion"
+      }
+    }
+  },
+  "complications": {
+    "features": [
+      {
+        "id": "acute_necrotic_collection",
+        "display": "acute necrotic collection (ANC)",
+        "role": "local_complication",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ]
+      },
+      {
+        "id": "walled_off_necrosis",
+        "display": "walled-off necrosis (WON)",
+        "role": "local_complication",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ]
+      },
+      {
+        "id": "sterile_necrosis",
+        "display": "sterile pancreatic necrosis",
+        "role": "local_complication",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ]
+      },
+      {
+        "id": "infected_necrosis",
+        "display": "infected pancreatic/peripancreatic necrosis",
+        "role": "highest_risk_complication",
+        "source": "WSES_2019"
+      },
+      {
+        "id": "pancreatic_pseudocyst",
+        "display": "pancreatic pseudocyst",
+        "role": "local_complication",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ]
+      },
+      {
+        "id": "persistent_organ_failure_gt_48h",
+        "display": "persistent organ failure (cardiovascular/respiratory/renal) >48h",
+        "role": "severe_classification_marker",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ]
+      },
+      {
+        "id": "sirs",
+        "display": "systemic inflammatory response syndrome",
+        "role": "risk_of_progression",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ]
+      }
+    ]
+  },
+  "differential_diagnosis": {
+    "source_policy": "Differential list prevents narrow LLM reasoning and overdiagnosis from epigastric pain/vomiting alone.",
+    "items": [
+      {
+        "diagnosis": "peptic_ulcer_disease",
+        "overlap": [
+          "epigastric pain",
+          "nausea"
+        ],
+        "distinguishing_clues": [
+          "burning epigastric pain related to meals",
+          "response to PPI",
+          "lipase not elevated"
+        ],
+        "agent_action": "Consider if lipase/amylase normal and pain is meal-related."
+      },
+      {
+        "diagnosis": "perforated_viscus",
+        "overlap": [
+          "acute severe epigastric pain",
+          "peritoneal signs"
+        ],
+        "distinguishing_clues": [
+          "free air on imaging",
+          "board-like rigidity"
+        ],
+        "agent_action": "Urgent imaging; do not assume pancreatitis from pain + lipase rise alone if free air present."
+      },
+      {
+        "diagnosis": "acute_cholecystitis",
+        "overlap": [
+          "upper abdominal pain",
+          "nausea/vomiting",
+          "fever"
+        ],
+        "distinguishing_clues": [
+          "RUQ rather than epigastric localization",
+          "positive Murphy sign",
+          "gallbladder wall thickening with stones"
+        ],
+        "agent_action": "Localization and imaging distinguish."
+      },
+      {
+        "diagnosis": "choledocholithiasis_or_cholangitis",
+        "overlap": [
+          "upper abdominal pain",
+          "jaundice",
+          "fever"
+        ],
+        "distinguishing_clues": [
+          "Charcot triad",
+          "CBD dilation with stone"
+        ],
+        "agent_action": "Consider when biliary obstruction features dominate."
+      },
+      {
+        "diagnosis": "mesenteric_ischemia",
+        "overlap": [
+          "severe abdominal pain",
+          "pain out of proportion to exam"
+        ],
+        "distinguishing_clues": [
+          "vascular risk factors",
+          "CT angiography findings"
+        ],
+        "agent_action": "Consider in elderly with cardiovascular history."
+      },
+      {
+        "diagnosis": "bowel_obstruction",
+        "overlap": [
+          "vomiting",
+          "abdominal pain",
+          "distension"
+        ],
+        "distinguishing_clues": [
+          "obstipation",
+          "dilated loops on imaging"
+        ],
+        "agent_action": "Imaging distinguishes."
+      },
+      {
+        "diagnosis": "myocardial_infarction",
+        "overlap": [
+          "epigastric discomfort",
+          "nausea/vomiting"
+        ],
+        "distinguishing_clues": [
+          "ECG changes",
+          "troponin elevation"
+        ],
+        "agent_action": "Always consider in older patients with risk factors; obtain ECG."
+      },
+      {
+        "diagnosis": "diabetic_ketoacidosis",
+        "overlap": [
+          "abdominal pain",
+          "nausea/vomiting",
+          "elevated amylase"
+        ],
+        "distinguishing_clues": [
+          "hyperglycemia",
+          "ketonemia",
+          "metabolic acidosis"
+        ],
+        "agent_action": "Consider diabetic ketoacidosis as a pancreatitis mimic when abdominal pain, nausea/vomiting, and metabolic derangement are present; do not confirm pancreatitis unless Revised Atlanta criteria are met.",
+        "source": "StatPearls_2025"
+      },
+      {
+        "diagnosis": "aortic_dissection",
+        "overlap": [
+          "severe pain radiating"
+        ],
+        "distinguishing_clues": [
+          "tearing pain to back/chest",
+          "pulse differential",
+          "CT angiogram findings"
+        ],
+        "agent_action": "Red flag; do not miss."
+      },
+      {
+        "diagnosis": "ruptured_abdominal_aortic_aneurysm",
+        "overlap": [
+          "severe abdominal/back pain"
+        ],
+        "distinguishing_clues": [
+          "hypotension",
+          "pulsatile mass",
+          "CT findings"
+        ],
+        "agent_action": "Red flag."
+      },
+      {
+        "diagnosis": "gastroenteritis",
+        "overlap": [
+          "nausea/vomiting/abdominal pain"
+        ],
+        "distinguishing_clues": [
+          "diarrhea",
+          "viral context",
+          "normal lipase"
+        ],
+        "agent_action": "Lower priority unless lipase normal and symptoms self-limited."
+      },
+      {
+        "diagnosis": "renal_colic",
+        "overlap": [
+          "nausea/vomiting"
+        ],
+        "distinguishing_clues": [
+          "flank-to-groin colicky pain",
+          "hematuria",
+          "stone on imaging"
+        ],
+        "agent_action": "Different localization."
+      },
+      {
+        "diagnosis": "viral_hepatitis",
+        "overlap": [
+          "nausea/vomiting",
+          "RUQ discomfort"
+        ],
+        "distinguishing_clues": [
+          "markedly elevated transaminases",
+          "viral serology"
+        ],
+        "agent_action": "Liver enzymes pattern distinguishes."
+      },
+      {
+        "diagnosis": "pneumonia_lower_lobe",
+        "overlap": [
+          "referred upper abdominal pain"
+        ],
+        "distinguishing_clues": [
+          "respiratory symptoms",
+          "CXR findings"
+        ],
+        "agent_action": "CXR if lower-lobe pneumonia suspected."
+      }
+    ],
+    "notes": "Differential diagnoses may mimic acute pancreatitis; confirmation still requires Revised Atlanta criteria and evaluation for critical mimics listed by StatPearls."
+  },
+  "agent_verifier": {
+    "input_schema": {
+      "clinical_note": "free text",
+      "labs": "structured or text",
+      "imaging_reports": "structured or text",
+      "time_from_symptom_onset": "optional",
+      "history": "optional"
+    },
+    "decision_algorithm": [
+      {
+        "step": 1,
+        "name": "Extract evidence",
+        "logic": "Extract symptoms, labs (lipase/amylase with ULN), imaging findings, and history.",
+        "source": "implementation_design_not_medical_source",
+        "derived": true
+      },
+      {
+        "step": 2,
+        "name": "Apply n-of-3 Revised Atlanta rule",
+        "logic": "Count present criteria: AP_C1 (pain), AP_C2 (lipase/amylase >=3x ULN), AP_C3 (characteristic imaging). >=2 = confirmed; 1 = possible_insufficient; 0 = not_supported.",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ]
+      },
+      {
+        "step": 3,
+        "name": "Etiology assessment",
+        "logic": "Only after suspected/confirmed pancreatitis: assess biliary (US, ALT >150 first 48h), alcohol (history), hypertriglyceridemia (TG >1000), hypercalcemia, drug-induced, postprocedural, genetic/autoimmune.",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ]
+      },
+      {
+        "step": 4,
+        "name": "Severity classification",
+        "logic": "Separately from diagnosis: mild = no organ failure / no complications; moderately severe = transient OF <48h or local/systemic complications; severe = persistent OF >48h; critical = persistent OF + infected necrosis.",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ]
+      },
+      {
+        "step": 5,
+        "name": "Return structured output",
+        "logic": "Return diagnosis_label, criteria_met/missing, etiology, severity, red flags, reasoning_summary, source_trace.",
+        "source": "implementation_design_not_medical_source",
+        "derived": true
+      }
+    ],
+    "abstention_rules": [
+      "If only AP_C1 is met (pain only), do NOT confirm — return possible_insufficient_evidence.",
+      "If lipase is reported as \"elevated\" without value/ULN or explicit ≥3× ULN statement, do NOT count AP_C2 as met.",
+      "If imaging shows gallstones only without pancreatic/peripancreatic inflammation, do NOT count AP_C3 as met.",
+      "If CRP/BUN/hematocrit/procalcitonin are the only abnormal findings without AP_C1/C2/C3, do NOT confirm pancreatitis — these are severity/prognostic markers.",
+      "In suspected DKA, treat AP_C2 with caution: require AP_C1 (compatible pain) or AP_C3 (imaging) in addition."
+    ],
+    "minimum_safe_output_contract": {
+      "required_fields": [
+        "diagnosis_label",
+        "criteria_met",
+        "criteria_missing_or_unknown",
+        "supportive_findings_not_counted",
+        "likely_etiology",
+        "severity",
+        "red_flags_or_high_risk_markers",
+        "reasoning_summary",
+        "source_trace"
+      ],
+      "forbidden_outputs": [
+        "Do not confirm acute pancreatitis from epigastric pain alone.",
+        "Do not count nausea/vomiting/anorexia as diagnostic criteria.",
+        "Do not count CRP, hematocrit, urea/BUN, procalcitonin as diagnostic criteria.",
+        "Do not infer lipase/amylase >=3x ULN from the word 'elevated' unless value/ULN or explicit 3x statement exists.",
+        "Do not use gallstones alone as the imaging diagnostic criterion unless imaging also supports pancreatitis.",
+        "Do not present project-derived mappings as direct WSES statements."
+      ],
+      "recommended_confidence_labels": [
+        "high (all 3 criteria)",
+        "moderate (2 criteria clearly)",
+        "low (1 criterion only)",
+        "very_low (supportive findings only)"
+      ]
+    }
+  },
+  "evidence_interpretation_layer": {
+    "purpose": "Convert extracted isolated features into conservative diagnostic support patterns for the LLM agent.",
+    "global_rules": [
+      "Do not confirm acute pancreatitis without satisfying ≥2 of the 3 Revised Atlanta criteria.",
+      "Etiology and severity markers are NEVER counted toward diagnostic confirmation.",
+      "Prefer labels: confirmed, possible_insufficient_evidence, not_supported_by_available_evidence, uncertain_due_to_missing_data.",
+      "When evidence conflicts (e.g., compatible pain but normal lipase and normal imaging), lower confidence rather than forcing a diagnosis."
+    ],
+    "patterns": [
+      {
+        "pattern_id": "classic_2of3_pain_plus_enzymes_pattern",
+        "positive_core_features": [
+          "epigastric_pain",
+          "lipase_or_amylase_ge_3x_uln"
+        ],
+        "supportive_features": [
+          "nausea_or_vomiting",
+          "anorexia",
+          "fever",
+          "epigastric_tenderness"
+        ],
+        "interpretation": "confirmed_acute_pancreatitis",
+        "confirmation_requirement": "2 of 3 Revised Atlanta criteria met (AP_C1 + AP_C2). Imaging not required when clinical + enzyme criteria are clear, per StatPearls page 6: clinical presentation and elevated pancreatic enzymes are usually sufficient.",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ]
+      },
+      {
+        "pattern_id": "imaging_supported_pattern",
+        "positive_core_features": [
+          "epigastric_pain",
+          "pancreatic_inflammation_on_ct_or_mri"
+        ],
+        "supportive_features": [
+          "peripancreatic_inflammation_or_fat_stranding"
+        ],
+        "interpretation": "confirmed_acute_pancreatitis",
+        "confirmation_requirement": "AP_C1 + AP_C3 satisfied. Useful when enzymes are normal due to late presentation or pre-existing pancreatic disease.",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ]
+      },
+      {
+        "pattern_id": "enzyme_plus_imaging_pattern_atypical_pain",
+        "positive_core_features": [
+          "lipase_or_amylase_ge_3x_uln",
+          "pancreatic_inflammation_on_imaging"
+        ],
+        "interpretation": "confirmed_acute_pancreatitis",
+        "confirmation_requirement": "AP_C2 + AP_C3 satisfied even with atypical pain presentation.",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ]
+      },
+      {
+        "pattern_id": "possible_insufficient_evidence_pattern",
+        "positive_core_features": [
+          "epigastric_pain"
+        ],
+        "typical_missing_items": [
+          "enzyme_value_with_ULN",
+          "imaging"
+        ],
+        "interpretation": "possible_acute_pancreatitis_insufficient_evidence",
+        "action_for_agent": "Recommend lipase/amylase with ULN, and imaging if doubt persists.",
+        "source": "derived_from_revised_atlanta_logic",
+        "caution": "Do not confirm from pain alone."
+      },
+      {
+        "pattern_id": "severe_disease_pattern",
+        "positive_core_features": [
+          "confirmed_acute_pancreatitis",
+          "persistent_organ_failure_gt_48h"
+        ],
+        "supportive_features": [
+          "pancreatic_necrosis",
+          "infected_necrosis",
+          "crp_ge_150_day3",
+          "bun_gt_20",
+          "hematocrit_gt_44"
+        ],
+        "interpretation": "severe_acute_pancreatitis_severity_label",
+        "caution": "Severity classification is separate from diagnostic confirmation.",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ]
+      },
+      {
+        "pattern_id": "gallstones_alone_pattern",
+        "positive_core_features": [
+          "us_gallstones"
+        ],
+        "interpretation": "not_diagnostic_for_pancreatitis_etiology_marker_only",
+        "caution": "Gallstones on US support biliary etiology IF pancreatitis is already confirmed via Revised Atlanta criteria. They do NOT alone satisfy AP_C3.",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ]
+      },
+      {
+        "pattern_id": "enzyme_alone_insufficient_pattern",
+        "positive_core_features": [
+          "lipase_or_amylase_ge_3x_uln"
+        ],
+        "typical_missing_items": [
+          "compatible_pain",
+          "characteristic_imaging"
+        ],
+        "interpretation": "possible_insufficient_evidence",
+        "caution": "Enzyme criterion alone is insufficient to confirm acute pancreatitis; at least 2 of the 3 Revised Atlanta criteria are required.",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ]
+      }
+    ]
+  },
+  "contradictory_and_uncertainty_layer": {
+    "purpose": "Prevent LLM overdiagnosis by explicitly representing negative, conflicting, or alternative-direction evidence.",
+    "contradictory_or_confidence_lowering_features": [
+      {
+        "id": "normal_lipase_and_normal_amylase",
+        "meaning": "Does not satisfy AP_C2 unless a report documents amylase/lipase ≥3× ULN. Interpret timing cautiously because enzyme levels rise, peak, and decline over time.",
+        "effect": "AP_C2_not_met_unless_threshold_documented",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ]
+      },
+      {
+        "id": "pain_not_epigastric_or_no_pain",
+        "meaning": "Does not satisfy AP_C1 unless abdominal pain is documented as characteristic/compatible with acute pancreatitis.",
+        "effect": "AP_C1_not_met_unless_compatible_pain_documented",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ]
+      },
+      {
+        "id": "imaging_negative_with_normal_pancreas",
+        "meaning": "Does not satisfy AP_C3 when imaging lacks characteristic findings of acute pancreatitis.",
+        "effect": "AP_C3_not_met_unless_characteristic_imaging_documented",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ]
+      },
+      {
+        "id": "free_air_or_obstruction_on_imaging",
+        "meaning": "Suggests perforated viscus or bowel obstruction as alternative.",
+        "effect": "consider_differential",
+        "source": "StatPearls_2025"
+      },
+      {
+        "id": "cardiac_features_with_ecg_changes",
+        "meaning": "Suggests MI; do not miss.",
+        "effect": "consider_differential",
+        "source": "StatPearls_2025"
+      },
+      {
+        "id": "tearing_pain_with_pulse_differential",
+        "meaning": "Suggests aortic dissection.",
+        "effect": "consider_differential",
+        "source": "StatPearls_2025"
+      },
+      {
+        "id": "dka_mimic_features_present",
+        "meaning": "Diabetic ketoacidosis may resemble acute pancreatitis with abdominal pain and elevated amylase; evaluate as a differential diagnosis while applying Revised Atlanta criteria for pancreatitis confirmation.",
+        "effect": "consider_differential",
+        "source": "StatPearls_2025"
+      },
+      {
+        "id": "isolated_gallstones_no_pancreatic_signs",
+        "meaning": "Gallstones alone are etiology context, not AP_C3.",
+        "effect": "lower_confidence",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ]
+      }
+    ],
+    "required_agent_behavior": [
+      "Report contradictory evidence in the output (do not silently drop normal labs or negative imaging).",
+      "State what evidence would be needed to move from possible_insufficient_evidence to confirmed.",
+      "When ≥2 criteria are met but a strong alternative is present (e.g., free air, ECG changes, dissection features), explicitly flag the alternative.",
+      "Always separate diagnostic confirmation from severity assessment."
+    ]
+  },
+  "clinical_nlp_context_layer": {
+    "purpose": "Make extraction safer by tracking negation, temporality, and experiencer per feature.",
+    "context_fields_required_per_feature": [
+      "present",
+      "negated",
+      "uncertain",
+      "historical",
+      "resolved",
+      "family_history_only",
+      "hypothetical_or_rule_out",
+      "evidence_text",
+      "section",
+      "timestamp_or_relative_time_if_available"
+    ],
+    "temporal_interpretation_rules": [
+      {
+        "id": "enzyme_kinetics_lipase",
+        "rule": "Lipase rises within 4-8h of onset, peaks at ~24h, declines over 8-14 days. Normal lipase late in course does not exclude pancreatitis.",
+        "source": "StatPearls_2025"
+      },
+      {
+        "id": "enzyme_kinetics_amylase",
+        "rule": "Amylase rises within 6-24h, peaks at 48h, declines over 3-7 days. Normal amylase in late presentation common.",
+        "source": "StatPearls_2025"
+      },
+      {
+        "id": "alt_etiology_window",
+        "rule": "ALT >150 U/L predictive value for gallstone etiology applies within first 48h of symptom onset.",
+        "source": "StatPearls_2025 (page 6)"
+      },
+      {
+        "id": "severity_48h_threshold",
+        "rule": "Organ failure >48h = severe; transient organ failure <48h with complications = moderately severe.",
+        "source": [
+          "WSES_2019",
+          "StatPearls_2025"
+        ]
+      },
+      {
+        "id": "cect_first_imaging_window",
+        "rule": "Optimal first contrast-enhanced CT in severe disease is 72-96h after symptom onset.",
+        "source": "WSES_2019"
+      }
+    ],
+    "negation_examples": [
+      {
+        "text_pattern": "lipase normal",
+        "feature": "lipase_or_amylase_ge_3x_uln",
+        "present": false
+      },
+      {
+        "text_pattern": "lipase not elevated",
+        "feature": "lipase_or_amylase_ge_3x_uln",
+        "present": false
+      },
+      {
+        "text_pattern": "no evidence of pancreatitis",
+        "feature": "pancreatic_inflammation_on_ct",
+        "present": false
+      },
+      {
+        "text_pattern": "pancreas unremarkable",
+        "feature": "pancreatic_inflammation_on_ct",
+        "present": false
+      },
+      {
+        "text_pattern": "rule out pancreatitis",
+        "feature": "acute_pancreatitis",
+        "present": "uncertain_hypothesis_not_diagnosis"
+      },
+      {
+        "text_pattern": "history of recurrent pancreatitis",
+        "feature": "acute_pancreatitis",
+        "present": "historical_not_current"
+      }
+    ]
+  },
+  "source_grounded_exclusions": [
+    {
+      "excluded_claim": "CRP elevation alone confirms acute pancreatitis.",
+      "reason": "CRP is a severity/prognostic marker per WSES 2019 and StatPearls; not a Revised Atlanta diagnostic criterion.",
+      "replacement": "Use CRP for severity assessment only; require ≥2 of AP_C1/C2/C3 for diagnosis."
+    },
+    {
+      "excluded_claim": "\"Elevated lipase\" without ULN context confirms AP_C2.",
+      "reason": "StatPearls and WSES require ≥3× ULN explicitly.",
+      "replacement": "Mark AP_C2 only when value/ULN ratio or explicit ≥3× ULN statement is available."
+    },
+    {
+      "excluded_claim": "Gallstones on US satisfy the imaging criterion.",
+      "reason": "StatPearls and WSES require characteristic pancreatitis findings, not biliary findings alone.",
+      "replacement": "Use gallstones as biliary etiology evidence; require pancreatic/peripancreatic inflammatory findings for AP_C3."
+    },
+    {
+      "excluded_claim": "BUN/hematocrit/procalcitonin elevations confirm pancreatitis.",
+      "reason": "These are prognostic/infection markers per WSES 2019, not Revised Atlanta criteria.",
+      "replacement": "Use these for severity/infection risk only."
+    }
+  ],
+  "source_audit": {
+    "status": "strict_review_applied_minor_unsourced_claims_removed_or_rewritten",
+    "checked_sources": [
+      "WSES_2019",
+      "StatPearls_2025"
+    ],
+    "summary": "Core KB claims align with WSES 2019 severity/management framework and StatPearls 2025 Revised Atlanta diagnostic criteria. Page-level provenance verified directly against the StatPearls Acute Pancreatitis PDF.",
+    "cautions": [
+      "This KB is for research LLM diagnostic support only, not autonomous clinical diagnosis.",
+      "Acute pancreatitis has a formal 2-of-3 diagnostic rule (Revised Atlanta) — different from cholecystitis/diverticulitis/appendicitis which lack such a rule.",
+      "Etiology and severity assessment must be performed separately from and after diagnostic confirmation."
+    ],
+    "page_level_provenance": [
+      {
+        "claim_id": "AP_DX_REVISED_ATLANTA_WSES_N_OF_3",
+        "source_id": "StatPearls_2025",
+        "source_page": "page 6 (Evaluation section)",
+        "exact_quote": "The diagnosis of acute pancreatitis is based on the Revised Atlanta Classification, which requires the presence of at least 2 of the following criteria: Characteristic abdominal pain, defined as epigastric discomfort that often radiates to the back; Serum amylase or lipase level 3 or more times the upper limit of normal; Imaging findings consistent with acute pancreatitis on ultrasound, computed tomography, or magnetic resonance imaging scans.",
+        "verification_method": "Direct PDF extraction and full-text match."
+      },
+      {
+        "claim_id": "AP_C1_PAIN_clinical_language",
+        "source_id": "StatPearls_2025",
+        "source_page": "page 5 (History and Physical)",
+        "exact_quote": "moderate-to-severe epigastric abdominal pain, often described as deep, burning, or stabbing, with radiation to the back",
+        "verification_method": "Direct PDF extraction."
+      },
+      {
+        "claim_id": "severe_pancreatitis_persistent_OF_48h",
+        "source_id": "StatPearls_2025",
+        "source_page": "page 2 (Introduction)",
+        "exact_quote": "Severe acute pancreatitis is marked by persistent organ failure exceeding 48 hours, often involving multiple organ systems.",
+        "verification_method": "Direct PDF extraction."
+      },
+      {
+        "claim_id": "triglycerides_gt_1000_etiology",
+        "source_id": "StatPearls_2025",
+        "source_page": "page 3 (Etiology — Metabolic causes)",
+        "exact_quote": "Hypertriglyceridemia, usually at levels exceeding 1000 mg/dL, is a well-recognized cause of acute pancreatitis. ... A level above 1000 mg/dL supports hypertriglyceridemia as the likely etiology.",
+        "verification_method": "Direct PDF extraction."
+      },
+      {
+        "claim_id": "alt_gt_150_first_48h_biliary_etiology",
+        "source_id": "StatPearls_2025",
+        "source_page": "page 6 (Etiologic Differentiation)",
+        "exact_quote": "An alanine aminotransferase (ALT) level greater than 150 U/L within the first 48 hours of symptom onset has a positive predictive value exceeding 85% for gallstone pancreatitis.",
+        "verification_method": "Direct PDF extraction."
+      },
+      {
+        "claim_id": "cullen_grey_turner_signs",
+        "source_id": "StatPearls_2025",
+        "source_page": "page 6 (History and Physical)",
+        "exact_quote": "Cullen sign, characterized by periumbilical ecchymosis, and Grey-Turner sign, marked by flank ecchymosis, suggest hemorrhagic pancreatitis with retroperitoneal or peritoneal bleeding.",
+        "verification_method": "Direct PDF extraction."
+      },
+      {
+        "claim_id": "bun_hematocrit_prognostic",
+        "source_id": "StatPearls_2025",
+        "source_page": "page 8 (Severity Assessment)",
+        "exact_quote": "Serial BUN and hematocrit measurements can provide additional prognostic information. Rising values may indicate inadequate fluid resuscitation and are associated with worse outcomes.",
+        "verification_method": "Direct PDF extraction."
+      },
+      {
+        "claim_id": "bisap_score_components",
+        "source_id": "StatPearls_2025",
+        "source_page": "page 10",
+        "exact_quote": "BISAP ... incorporates 5 simple clinical variables available at initial presentation: B: Blood urea nitrogen over 25 mg/dL (8.9 mmol/L); I: Impaired mental status (Glasgow Coma Scale <15); S: Presence of SIRS; A: Age older than 60; P: Pleural effusion on imaging.",
+        "verification_method": "Direct PDF extraction."
+      },
+      {
+        "claim_id": "crp_ge_150_day3",
+        "source_id": "WSES_2019",
+        "source_page": "see WSES 2019 severity assessment section",
+        "exact_quote": "PROVENANCE_NOTE: CRP ≥150 mg/L at day 3 prognostic threshold. Not page-verified against the WSES 2019 PDF.",
+        "verification_method": "Widely cited WSES 2019 threshold, retained without page-level verification."
+      }
+    ]
+  }
+}
